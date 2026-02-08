@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HabiBot.Application/HabiBot.Application.csproj" />
+    <Project Path="src/HabiBot.Bot/HabiBot.Bot.csproj" />
+    <Project Path="src/HabiBot.Domain/HabiBot.Domain.csproj" />
+    <Project Path="src/HabiBot.Infrastructure/HabiBot.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/HabiBot.Tests/HabiBot.Tests.csproj" />
+  </Folder>
+</Solution>
