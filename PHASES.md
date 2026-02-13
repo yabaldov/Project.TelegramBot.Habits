@@ -12,14 +12,14 @@
 - [x] Добавить `.gitignore` и `Directory.Build.props`
 - [x] Настроить Nullable Reference Types и file-scoped namespaces
 
-## 🏗️ Фаза 2: Domain Layer (доменная модель)
-- [ ] Создать базовые сущности:
+## 🏗️ Фаза 2: Domain Layer (доменная модель) ✅
+- [x] Создать базовые сущности:
   - `User` (Id: long для Telegram, Name, TimeZone, CreatedAt/UpdatedAt)
   - `Habit` (Name, ReminderTime, Frequency)
   - `HabitLog` (отметки выполнения)
-- [ ] Добавить Audit поля (CreatedAt, UpdatedAt, IsDeleted)
-- [ ] Создать value objects и enums (HabitFrequency)
-- [ ] Определить интерфейсы репозиториев (IRepository<T>, IUnitOfWork)
+- [x] Добавить Audit поля (CreatedAt, UpdatedAt, IsDeleted)
+- [x] Создать value objects и enums (HabitFrequency)
+- [x] Определить интерфейсы репозиториев (IRepository<T>, IUnitOfWork)
 
 ## 🔧 Фаза 3: Infrastructure - База данных
 - [ ] Установить NuGet: EF Core, Npgsql.EntityFrameworkCore.PostgreSQL
