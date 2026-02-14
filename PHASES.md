@@ -21,13 +21,13 @@
 - [x] Создать value objects и enums (HabitFrequency)
 - [x] Определить интерфейсы репозиториев (IRepository<T>, IUnitOfWork)
 
-## 🔧 Фаза 3: Infrastructure - База данных
-- [ ] Установить NuGet: EF Core, Npgsql.EntityFrameworkCore.PostgreSQL
-- [ ] Создать `HabiBotDbContext` с конфигурациями сущностей
-- [ ] Настроить подключение к PostgreSQL через appsettings.json
-- [ ] Реализовать Repository Pattern и Unit of Work
-- [ ] Создать первую миграцию БД (`Initial`)
-- [ ] Настроить User Secrets для строки подключения (dev)
+## 🔧 Фаза 3: Infrastructure - База данных ✅
+- [x] Установить NuGet: EF Core, Npgsql.EntityFrameworkCore.PostgreSQL
+- [x] Создать `HabiBotDbContext` с конфигурациями сущностей
+- [x] Настроить подключение к PostgreSQL через appsettings.json
+- [x] Реализовать Repository Pattern и Unit of Work
+- [x] Создать первую миграцию БД (`Initial`)
+- [x] Настроить User Secrets для строки подключения (dev)
 
 ## 📡 Фаза 4: Telegram API Integration (БЕЗ библиотек)
 - [ ] Создать папку `Models/Telegram/` в Infrastructure

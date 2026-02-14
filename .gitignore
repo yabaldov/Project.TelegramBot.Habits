@@ -44,7 +44,8 @@ CLAUDE.md
 TODO.md
 AGENTS.md
 GEMINI.md
-PHASES.md
+docker-compose.yml
+.env
 
 # User secrets
 **/appsettings.Development.json

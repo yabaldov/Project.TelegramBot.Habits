@@ -1,0 +1,20 @@
+services:
+  postgres_db:
+    image: postgres:17-alpine
+    container_name: pg_habibot
+    environment:
+      POSTGRES_USER: qa_admin
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: habibot_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qa_admin -d habibot_dev -h localhost -p 5432"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pg:
