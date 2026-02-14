@@ -1,6 +1,7 @@
 using HabiBot.Domain.Interfaces;
 using HabiBot.Infrastructure.Data;
 using HabiBot.Infrastructure.Repositories;
+using HabiBot.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,13 @@ public static class DependencyInjection
 
         // Регистрация Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Регистрация настроек Telegram бота
+        services.Configure<TelegramBotOptions>(
+            configuration.GetSection(TelegramBotOptions.SectionName));
+
+        // Регистрация HttpClient для Telegram API
+        services.AddHttpClient<ITelegramApiClient, TelegramApiClient>();
 
         return services;
     }

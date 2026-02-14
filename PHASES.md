@@ -29,16 +29,16 @@
 - [x] Создать первую миграцию БД (`Initial`)
 - [x] Настроить User Secrets для строки подключения (dev)
 
-## 📡 Фаза 4: Telegram API Integration (БЕЗ библиотек)
-- [ ] Создать папку `Models/Telegram/` в Infrastructure
-- [ ] Создать собственные DTO (record types) с `[JsonPropertyName]`:
-  - `Update`, `Message`, `Chat`, `User`
-  - `SendMessageRequest`, `SendMessageResponse`
-- [ ] Реализовать `ITelegramApiClient` интерфейс
-- [ ] Реализовать `TelegramApiClient` используя **только HttpClient**
-- [ ] Зарегистрировать HttpClient через `IHttpClientFactory` в DI
-- [ ] Настроить Long Polling (`getUpdates`) для получения сообщений
-- [ ] Сохранить Bot Token в User Secrets
+## 📡 Фаза 4: Telegram API Integration (БЕЗ библиотек) ✅
+- [x] Создать папку `Models/Telegram/` в Infrastructure
+- [x] Создать собственные DTO (record types) с `[JsonPropertyName]`:
+  - `Update`, `Message`, `Chat`, `TelegramUser`
+  - `SendMessageRequest`, `TelegramResponse`, `GetUpdatesRequest`
+- [x] Реализовать `ITelegramApiClient` интерфейс
+- [x] Реализовать `TelegramApiClient` используя **только HttpClient**
+- [x] Зарегистрировать HttpClient через `IHttpClientFactory` в DI
+- [x] Настроить Long Polling (`getUpdates`) для получения сообщений
+- [x] Сохранить Bot Token в User Secrets
 
 ## 💼 Фаза 5: Application Layer - Сервисы
 - [ ] Установить NuGet: FluentValidation, FluentValidation.DependencyInjectionExtensions
