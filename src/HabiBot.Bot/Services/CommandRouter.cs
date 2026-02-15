@@ -17,6 +17,8 @@ public class CommandRouter
     private readonly Dictionary<string, IBotCommand> _commands;
     private readonly StartCommand _startCommand;
     private readonly AddCommand _addCommand;
+    private readonly EditCommand _editCommand;
+    private readonly DeleteCommand _deleteCommand;
     private readonly CompletedHandler _completedHandler;
 
     public CommandRouter(
@@ -28,6 +30,8 @@ public class CommandRouter
         ListCommand listCommand,
         AddCommand addCommand,
         StatsCommand statsCommand,
+        EditCommand editCommand,
+        DeleteCommand deleteCommand,
         CompletedHandler completedHandler)
     {
         _logger = logger;
@@ -35,6 +39,8 @@ public class CommandRouter
         _telegramClient = telegramClient;
         _startCommand = startCommand;
         _addCommand = addCommand;
+        _editCommand = editCommand;
+        _deleteCommand = deleteCommand;
         _completedHandler = completedHandler;
 
         _commands = new Dictionary<string, IBotCommand>(StringComparer.OrdinalIgnoreCase)
@@ -44,6 +50,8 @@ public class CommandRouter
             { listCommand.Name, listCommand },
             { addCommand.Name, addCommand },
             { statsCommand.Name, statsCommand },
+            { editCommand.Name, editCommand },
+            { deleteCommand.Name, deleteCommand },
         };
     }
 
@@ -52,6 +60,13 @@ public class CommandRouter
     /// </summary>
     public async Task RouteAsync(Update update, CancellationToken cancellationToken = default)
     {
+        // Обработка callback query от inline кнопок
+        if (update.CallbackQuery != null)
+        {
+            await HandleCallbackQueryAsync(update.CallbackQuery, cancellationToken);
+            return;
+        }
+
         if (update.Message == null)
         {
             _logger.LogDebug("Получен Update без Message");
@@ -143,10 +158,103 @@ public class CommandRouter
                 await _addCommand.HandleReminderTimeInputAsync(update, messageText, cancellationToken);
                 break;
 
+            case UserState.WaitingForEditName:
+                var chatId1 = update.Message?.Chat.Id ?? 0;
+                var userId1 = update.Message?.From?.Id ?? 0;
+                await _editCommand.HandleNameInputAsync(chatId1, userId1, messageText, cancellationToken);
+                break;
+
+            case UserState.WaitingForEditTime:
+                var chatId2 = update.Message?.Chat.Id ?? 0;
+                var userId2 = update.Message?.From?.Id ?? 0;
+                await _editCommand.HandleTimeInputAsync(chatId2, userId2, messageText, cancellationToken);
+                break;
+
             default:
                 _logger.LogWarning("Неизвестное состояние {State} для пользователя {UserId}", state, userId);
                 _stateManager.ClearState(userId);
                 break;
+        }
+    }
+
+    /// <summary>
+    /// Обработка callback query от inline кнопок
+    /// </summary>
+    private async Task HandleCallbackQueryAsync(CallbackQuery callbackQuery, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var chatId = callbackQuery.Message?.Chat.Id ?? 0;
+            var userId = callbackQuery.From.Id;
+            var data = callbackQuery.Data ?? string.Empty;
+
+            _logger.LogInformation("Получен callback query от пользователя {UserId}: {Data}", userId, data);
+
+            // Отвечаем на callback query чтобы убрать "часики" в Telegram
+            await _telegramClient.AnswerCallbackQueryAsync(callbackQuery.Id, cancellationToken: cancellationToken);
+
+            var parts = data.Split(':');
+            if (parts.Length < 2)
+            {
+                _logger.LogWarning("Некорректный формат callback data: {Data}", data);
+                return;
+            }
+
+            var action = parts[0];
+            
+            switch (action)
+            {
+                case "edit":
+                    if (long.TryParse(parts[1], out var editHabitId))
+                    {
+                        await _editCommand.HandleHabitSelectedAsync(chatId, userId, editHabitId, cancellationToken);
+                    }
+                    break;
+
+                case "editfield":
+                    if (parts.Length >= 3 && long.TryParse(parts[2], out var fieldHabitId))
+                    {
+                        await _editCommand.HandleFieldSelectedAsync(chatId, userId, parts[1], fieldHabitId, cancellationToken);
+                    }
+                    else if (parts[1] == "cancel")
+                    {
+                        await _editCommand.HandleFieldSelectedAsync(chatId, userId, "cancel", 0, cancellationToken);
+                    }
+                    break;
+
+                case "frequency":
+                    if (parts.Length >= 3 && long.TryParse(parts[2], out var freqHabitId))
+                    {
+                        await _editCommand.HandleFrequencySelectedAsync(chatId, userId, parts[1], freqHabitId, cancellationToken);
+                    }
+                    break;
+
+                case "delete":
+                    if (long.TryParse(parts[1], out var deleteHabitId))
+                    {
+                        await _deleteCommand.HandleHabitSelectedAsync(chatId, userId, deleteHabitId, cancellationToken);
+                    }
+                    break;
+
+                case "deleteconfirm":
+                    if (parts.Length >= 3 && long.TryParse(parts[2], out var confirmHabitId))
+                    {
+                        await _deleteCommand.HandleDeleteConfirmAsync(chatId, userId, parts[1], confirmHabitId, cancellationToken);
+                    }
+                    else if (parts[1] == "no")
+                    {
+                        await _deleteCommand.HandleDeleteConfirmAsync(chatId, userId, "no", 0, cancellationToken);
+                    }
+                    break;
+
+                default:
+                    _logger.LogWarning("Неизвестный callback action: {Action}", action);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка обработки callback query");
         }
     }
 

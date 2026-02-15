@@ -69,6 +69,21 @@ public class TelegramApiClient : ITelegramApiClient
         return botInfo;
     }
 
+    public async Task AnswerCallbackQueryAsync(string callbackQueryId, string? text = null, CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug("Ответ на callback query {CallbackQueryId}", callbackQueryId);
+
+        var request = new
+        {
+            callback_query_id = callbackQueryId,
+            text = text
+        };
+
+        await PostAsync<bool>("answerCallbackQuery", request, cancellationToken);
+        
+        _logger.LogInformation("Callback query {CallbackQueryId} обработан", callbackQueryId);
+    }
+
     private async Task<T> PostAsync<T>(string method, object request, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(request, _jsonOptions);

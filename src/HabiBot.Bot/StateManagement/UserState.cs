@@ -23,5 +23,20 @@ public enum UserState
     /// <summary>
     /// Ожидание ввода времени напоминания
     /// </summary>
-    WaitingForReminderTime
+    WaitingForReminderTime,
+
+    /// <summary>
+    /// Ожидание выбора поля для редактирования
+    /// </summary>
+    WaitingForEditField,
+
+    /// <summary>
+    /// Ожидание ввода нового названия привычки при редактировании
+    /// </summary>
+    WaitingForEditName,
+
+    /// <summary>
+    /// Ожидание ввода нового времени при редактировании
+    /// </summary>
+    WaitingForEditTime
 }

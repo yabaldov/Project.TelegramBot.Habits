@@ -21,4 +21,9 @@ public interface ITelegramApiClient
     /// Получить информацию о боте
     /// </summary>
     Task<TelegramUser> GetMeAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Ответить на callback query
+    /// </summary>
+    Task AnswerCallbackQueryAsync(string callbackQueryId, string? text = null, CancellationToken cancellationToken = default);
 }

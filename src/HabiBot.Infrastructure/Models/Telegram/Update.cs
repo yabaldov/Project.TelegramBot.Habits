@@ -21,4 +21,7 @@ public record Update
 
     [JsonPropertyName("edited_channel_post")]
     public Message? EditedChannelPost { get; init; }
+
+    [JsonPropertyName("callback_query")]
+    public CallbackQuery? CallbackQuery { get; init; }
 }

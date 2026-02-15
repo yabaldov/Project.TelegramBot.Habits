@@ -18,4 +18,7 @@ public record SendMessageRequest
 
     [JsonPropertyName("reply_to_message_id")]
     public long? ReplyToMessageId { get; init; }
+
+    [JsonPropertyName("reply_markup")]
+    public InlineKeyboardMarkup? ReplyMarkup { get; init; }
 }

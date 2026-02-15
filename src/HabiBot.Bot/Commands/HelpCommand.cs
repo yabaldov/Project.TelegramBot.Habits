@@ -42,6 +42,8 @@ public class HelpCommand : BotCommandBase
 **Управление привычками:**
 /add - Добавить новую привычку
 /list - Показать все мои привычки
+/edit - Редактировать привычку
+/delete - Удалить привычку
 
 **Статистика:**
 /stats - Статистика за неделю
@@ -54,11 +56,7 @@ public class HelpCommand : BotCommandBase
 
 **Примеры:**
 • Выполнено! Медитация
-• Выполнено! - если привычка одна
-
-**Скоро:**
-/edit - Редактировать привычку
-/delete - Удалить привычку";
+• Выполнено! - если привычка одна";
 
             await SendMessageAsync(chatId.Value, helpMessage, cancellationToken);
             Logger.LogInformation("Показана справка пользователю {ChatId}", chatId.Value);

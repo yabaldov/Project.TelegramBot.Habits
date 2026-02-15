@@ -32,14 +32,15 @@ public abstract class BotCommandBase : IBotCommand
     /// <summary>
     /// Отправить текстовое сообщение пользователю
     /// </summary>
-    protected async Task SendMessageAsync(long chatId, string text, CancellationToken cancellationToken = default)
+    protected async Task SendMessageAsync(long chatId, string text, CancellationToken cancellationToken = default, InlineKeyboardMarkup? replyMarkup = null)
     {
         try
         {
             var request = new SendMessageRequest
             {
                 ChatId = chatId,
-                Text = text
+                Text = text,
+                ReplyMarkup = replyMarkup
             };
             await TelegramClient.SendMessageAsync(request, cancellationToken);
             Logger.LogDebug("Отправлено сообщение в чат {ChatId}: {Text}", chatId, text);
