@@ -40,15 +40,15 @@
 - [x] Настроить Long Polling (`getUpdates`) для получения сообщений
 - [x] Сохранить Bot Token в User Secrets
 
-## 💼 Фаза 5: Application Layer - Сервисы
-- [ ] Установить NuGet: FluentValidation, FluentValidation.DependencyInjectionExtensions
-- [ ] Создать интерфейсы сервисов:
+## 💼 Фаза 5: Application Layer - Сервисы ✅
+- [x] Установить NuGet: FluentValidation, FluentValidation.DependencyInjectionExtensions
+- [x] Создать интерфейсы сервисов:
   - `IUserService` (регистрация, поиск)
   - `IHabitService` (CRUD привычек)
   - `IHabitLogService` (отметки выполнения)
-- [ ] Реализовать сервисы с валидацией
-- [ ] Создать DTO для команд (CreateHabitDto, etc.)
-- [ ] Добавить валидаторы FluentValidation
+- [x] Реализовать сервисы с валидацией
+- [x] Создать DTO для команд (CreateHabitDto, etc.)
+- [x] Добавить валидаторы FluentValidation
 
 ## 🤖 Фаза 6: Bot - State Management и команды
 - [ ] Создать FSM (Finite State Machine) для диалогов
