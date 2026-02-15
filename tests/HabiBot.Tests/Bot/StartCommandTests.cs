@@ -111,7 +111,8 @@ public class StartCommandTests
         var createdUser = new User
         {
             Id = 1,
-            TelegramChatId = userId,
+            TelegramUserId = userId,
+            TelegramChatId = chatId,
             Name = name
         };
 
@@ -125,7 +126,7 @@ public class StartCommandTests
         // Assert
         _userServiceMock.Verify(
             s => s.CreateUserAsync(
-                It.Is<CreateUserDto>(dto => dto.TelegramChatId == userId && dto.Name == name),
+                It.Is<CreateUserDto>(dto => dto.TelegramUserId == userId && dto.TelegramChatId == chatId && dto.Name == name),
                 It.IsAny<CancellationToken>()),
             Times.Once);
 

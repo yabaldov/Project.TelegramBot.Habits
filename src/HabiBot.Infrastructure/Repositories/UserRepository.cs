@@ -17,12 +17,12 @@ public class UserRepository : Repository<User>, IUserRepository
     public async Task<User?> GetByTelegramIdAsync(long telegramId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .FirstOrDefaultAsync(u => u.TelegramChatId == telegramId, cancellationToken);
+            .FirstOrDefaultAsync(u => u.TelegramUserId == telegramId, cancellationToken);
     }
 
     public async Task<bool> ExistsByTelegramIdAsync(long telegramId, CancellationToken cancellationToken = default)
     {
         return await _dbSet
-            .AnyAsync(u => u.TelegramChatId == telegramId, cancellationToken);
+            .AnyAsync(u => u.TelegramUserId == telegramId, cancellationToken);
     }
 }

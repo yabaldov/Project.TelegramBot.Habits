@@ -33,18 +33,21 @@ public class UserService : IUserService
         await _createValidator.ValidateAndThrowAsync(dto, cancellationToken);
 
         // Проверка существования
-        var exists = await _unitOfWork.Users.ExistsByTelegramIdAsync(dto.TelegramChatId, cancellationToken);
+        var exists = await _unitOfWork.Users.ExistsByTelegramIdAsync(dto.TelegramUserId, cancellationToken);
         if (exists)
         {
-            _logger.LogWarning("Пользователь с Telegram ID {TelegramId} уже существует", dto.TelegramChatId);
-            throw new InvalidOperationException($"Пользователь с Telegram ID {dto.TelegramChatId} уже существует");
+            _logger.LogWarning("Пользователь с Telegram ID {TelegramId} уже существует", dto.TelegramUserId);
+            throw new InvalidOperationException($"Пользователь с Telegram ID {dto.TelegramUserId} уже существует");
         }
 
         // Создание пользователя
         var user = new User
         {
             Name = dto.Name,
+            TelegramUserId = dto.TelegramUserId,
             TelegramChatId = dto.TelegramChatId,
+            TelegramFirstName = dto.TelegramFirstName,
+            TelegramLastName = dto.TelegramLastName,
             TelegramUserName = dto.TelegramUserName,
             RegisteredAt = DateTime.UtcNow,
             TimeZone = dto.TimeZone
@@ -53,7 +56,7 @@ public class UserService : IUserService
         await _unitOfWork.Users.AddAsync(user, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        _logger.LogInformation("Пользователь создан: {UserId}, Telegram ID: {TelegramId}", user.Id, user.TelegramChatId);
+        _logger.LogInformation("Пользователь создан: {UserId}, Telegram ID: {TelegramId}", user.Id, user.TelegramUserId);
 
         return user;
     }

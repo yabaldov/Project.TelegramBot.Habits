@@ -26,19 +26,27 @@ public class UserTests
         var user = new User
         {
             Name = "Алексей",
-            TelegramChatId = 123456789
+            TelegramUserId = 123456789,
+            TelegramChatId = 123456789,
+            TelegramFirstName = "Alex",
+            TelegramLastName = "Ivanov",
+            TelegramUserName = "alexivanov"
         };
 
         // Act & Assert
         user.Name.Should().Be("Алексей");
+        user.TelegramUserId.Should().Be(123456789);
         user.TelegramChatId.Should().Be(123456789);
+        user.TelegramFirstName.Should().Be("Alex");
+        user.TelegramLastName.Should().Be("Ivanov");
+        user.TelegramUserName.Should().Be("alexivanov");
     }
 
     [Fact]
     public void User_ShouldHaveHabitsCollection()
     {
         // Arrange
-        var user = new User { Id = 1, Name = "Тест", TelegramChatId = 123 };
+        var user = new User { Id = 1, Name = "Тест", TelegramUserId = 123, TelegramChatId = 123 };
         var habit1 = new Habit { Name = "Привычка 1", UserId = user.Id };
         var habit2 = new Habit { Name = "Привычка 2", UserId = user.Id };
 

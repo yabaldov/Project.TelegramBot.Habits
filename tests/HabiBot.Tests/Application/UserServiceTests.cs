@@ -38,6 +38,7 @@ public class UserServiceTests
         // Arrange
         var dto = new CreateUserDto
         {
+            TelegramUserId = 123456789,
             TelegramChatId = 123456789,
             Name = "Алексей"
         };
@@ -47,7 +48,7 @@ public class UserServiceTests
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
         _userRepositoryMock
-            .Setup(r => r.ExistsByTelegramIdAsync(dto.TelegramChatId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.ExistsByTelegramIdAsync(dto.TelegramUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
         _userRepositoryMock
@@ -60,6 +61,7 @@ public class UserServiceTests
         // Assert
         result.Should().NotBeNull();
         result.Name.Should().Be("Алексей");
+        result.TelegramUserId.Should().Be(123456789);
         result.TelegramChatId.Should().Be(123456789);
 
         _userRepositoryMock.Verify(r => r.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Once);
@@ -72,6 +74,7 @@ public class UserServiceTests
         // Arrange
         var dto = new CreateUserDto
         {
+            TelegramUserId = 123456789,
             TelegramChatId = 123456789,
             Name = "Алексей"
         };
@@ -81,7 +84,7 @@ public class UserServiceTests
             .ReturnsAsync(new FluentValidation.Results.ValidationResult());
 
         _userRepositoryMock
-            .Setup(r => r.ExistsByTelegramIdAsync(dto.TelegramChatId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.ExistsByTelegramIdAsync(dto.TelegramUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
         // Act
@@ -103,6 +106,7 @@ public class UserServiceTests
         var expectedUser = new User
         {
             Id = 1,
+            TelegramUserId = telegramId,
             TelegramChatId = telegramId,
             Name = "Алексей"
         };
@@ -117,6 +121,7 @@ public class UserServiceTests
         // Assert
         result.Should().NotBeNull();
         result!.Id.Should().Be(1);
+        result.TelegramUserId.Should().Be(telegramId);
         result.TelegramChatId.Should().Be(telegramId);
         result.Name.Should().Be("Алексей");
     }

@@ -42,6 +42,7 @@ builder.Services.AddSingleton<IUserStateManager, UserStateManager>();
 
 // Регистрация команд
 builder.Services.AddScoped<StartCommand>();
+builder.Services.AddScoped<HelpCommand>();
 builder.Services.AddScoped<ListCommand>();
 builder.Services.AddScoped<AddCommand>();
 builder.Services.AddScoped<CompletedHandler>();

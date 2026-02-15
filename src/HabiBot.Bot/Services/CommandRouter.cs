@@ -21,6 +21,7 @@ public class CommandRouter
         ILogger<CommandRouter> logger,
         IUserStateManager stateManager,
         StartCommand startCommand,
+        HelpCommand helpCommand,
         ListCommand listCommand,
         AddCommand addCommand,
         CompletedHandler completedHandler)
@@ -34,6 +35,7 @@ public class CommandRouter
         _commands = new Dictionary<string, IBotCommand>(StringComparer.OrdinalIgnoreCase)
         {
             { startCommand.Name, startCommand },
+            { helpCommand.Name, helpCommand },
             { listCommand.Name, listCommand },
             { addCommand.Name, addCommand },
         };

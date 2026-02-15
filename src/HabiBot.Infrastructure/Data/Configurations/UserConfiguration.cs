@@ -19,11 +19,20 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(u => u.TelegramUserId)
+            .IsRequired();
+
+        builder.HasIndex(u => u.TelegramUserId)
+            .IsUnique();
+
         builder.Property(u => u.TelegramChatId)
             .IsRequired();
 
-        builder.HasIndex(u => u.TelegramChatId)
-            .IsUnique();
+        builder.Property(u => u.TelegramFirstName)
+            .HasMaxLength(100);
+
+        builder.Property(u => u.TelegramLastName)
+            .HasMaxLength(100);
 
         builder.Property(u => u.TelegramUserName)
             .HasMaxLength(100);

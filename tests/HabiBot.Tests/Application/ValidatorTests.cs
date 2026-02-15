@@ -13,6 +13,7 @@ public class ValidatorTests
         var validator = new CreateUserDtoValidator();
         var dto = new CreateUserDto
         {
+            TelegramUserId = 123456789,
             TelegramChatId = 123456789,
             Name = "Алексей"
         };
@@ -31,6 +32,7 @@ public class ValidatorTests
         var validator = new CreateUserDtoValidator();
         var dto = new CreateUserDto
         {
+            TelegramUserId = 123456789,
             TelegramChatId = 123456789,
             Name = ""
         };
@@ -44,13 +46,14 @@ public class ValidatorTests
     }
 
     [Fact]
-    public async Task CreateUserDtoValidator_ShouldFail_WhenTelegramChatIdIsZero()
+    public async Task CreateUserDtoValidator_ShouldFail_WhenTelegramUserIdIsZero()
     {
         // Arrange
         var validator = new CreateUserDtoValidator();
         var dto = new CreateUserDto
         {
-            TelegramChatId = 0,
+            TelegramUserId = 0,
+            TelegramChatId = 123456789,
             Name = "Тест"
         };
 
@@ -59,7 +62,7 @@ public class ValidatorTests
 
         // Assert
         result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(e => e.PropertyName == nameof(CreateUserDto.TelegramChatId));
+        result.Errors.Should().Contain(e => e.PropertyName == nameof(CreateUserDto.TelegramUserId));
     }
 
     [Fact]

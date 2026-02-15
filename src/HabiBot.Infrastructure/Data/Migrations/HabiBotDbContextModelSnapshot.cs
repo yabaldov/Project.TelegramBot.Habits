@@ -132,6 +132,17 @@ namespace HabiBot.Infrastructure.Data.Migrations
                     b.Property<long>("TelegramChatId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("TelegramFirstName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("TelegramLastName")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<long>("TelegramUserId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("TelegramUserName")
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
@@ -145,7 +156,7 @@ namespace HabiBot.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TelegramChatId")
+                    b.HasIndex("TelegramUserId")
                         .IsUnique();
 
                     b.ToTable("Users", (string)null);

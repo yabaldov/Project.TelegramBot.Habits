@@ -6,14 +6,29 @@ namespace HabiBot.Domain.Entities;
 public class User : BaseEntity
 {
     /// <summary>
-    /// Имя пользователя
+    /// Отображаемое имя пользователя (кастомное, устанавливается при регистрации)
     /// </summary>
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
-    /// Идентификатор чата Telegram (равен Id для пользователей)
+    /// Уникальный идентификатор пользователя в Telegram
+    /// </summary>
+    public long TelegramUserId { get; set; }
+
+    /// <summary>
+    /// Идентификатор чата с пользователем (для private чатов равен TelegramUserId)
     /// </summary>
     public long TelegramChatId { get; set; }
+
+    /// <summary>
+    /// Имя пользователя в Telegram (First Name)
+    /// </summary>
+    public string? TelegramFirstName { get; set; }
+
+    /// <summary>
+    /// Фамилия пользователя в Telegram (Last Name)
+    /// </summary>
+    public string? TelegramLastName { get; set; }
 
     /// <summary>
     /// Username пользователя в Telegram (без @)
