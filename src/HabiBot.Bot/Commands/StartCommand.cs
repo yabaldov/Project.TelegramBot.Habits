@@ -98,10 +98,13 @@ public class StartCommand : BotCommandBase
             }
 
             // Создаем пользователя
+            var username = update.Message?.From?.Username;
+            
             var createUserDto = new CreateUserDto
             {
                 TelegramChatId = userId.Value,
-                Name = name.Trim()
+                Name = name.Trim(),
+                TelegramUserName = username
             };
 
             await _userService.CreateUserAsync(createUserDto, cancellationToken);

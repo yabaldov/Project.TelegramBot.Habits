@@ -25,6 +25,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(u => u.TelegramChatId)
             .IsUnique();
 
+        builder.Property(u => u.TelegramUserName)
+            .HasMaxLength(100);
+
+        builder.Property(u => u.RegisteredAt)
+            .IsRequired();
+
         builder.Property(u => u.TimeZone)
             .HasMaxLength(100);
 

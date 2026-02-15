@@ -45,6 +45,8 @@ public class UserService : IUserService
         {
             Name = dto.Name,
             TelegramChatId = dto.TelegramChatId,
+            TelegramUserName = dto.TelegramUserName,
+            RegisteredAt = DateTime.UtcNow,
             TimeZone = dto.TimeZone
         };
 

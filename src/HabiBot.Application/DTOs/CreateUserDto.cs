@@ -16,6 +16,11 @@ public record CreateUserDto
     public long TelegramChatId { get; init; }
 
     /// <summary>
+    /// Username в Telegram (без @)
+    /// </summary>
+    public string? TelegramUserName { get; init; }
+
+    /// <summary>
     /// Часовой пояс пользователя
     /// </summary>
     public string? TimeZone { get; init; }

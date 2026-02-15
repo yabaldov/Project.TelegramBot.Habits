@@ -16,6 +16,16 @@ public class User : BaseEntity
     public long TelegramChatId { get; set; }
 
     /// <summary>
+    /// Username пользователя в Telegram (без @)
+    /// </summary>
+    public string? TelegramUserName { get; set; }
+
+    /// <summary>
+    /// Дата и время регистрации в боте
+    /// </summary>
+    public DateTime RegisteredAt { get; set; }
+
+    /// <summary>
     /// Часовой пояс пользователя (например, "Europe/Moscow")
     /// </summary>
     public string? TimeZone { get; set; }
