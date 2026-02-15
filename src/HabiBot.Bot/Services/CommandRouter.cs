@@ -1,6 +1,7 @@
 using HabiBot.Bot.Commands;
 using HabiBot.Bot.StateManagement;
 using HabiBot.Infrastructure.Models.Telegram;
+using HabiBot.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 
 namespace HabiBot.Bot.Services;
@@ -12,6 +13,7 @@ public class CommandRouter
 {
     private readonly ILogger<CommandRouter> _logger;
     private readonly IUserStateManager _stateManager;
+    private readonly ITelegramApiClient _telegramClient;
     private readonly Dictionary<string, IBotCommand> _commands;
     private readonly StartCommand _startCommand;
     private readonly AddCommand _addCommand;
@@ -20,14 +22,17 @@ public class CommandRouter
     public CommandRouter(
         ILogger<CommandRouter> logger,
         IUserStateManager stateManager,
+        ITelegramApiClient telegramClient,
         StartCommand startCommand,
         HelpCommand helpCommand,
         ListCommand listCommand,
         AddCommand addCommand,
+        StatsCommand statsCommand,
         CompletedHandler completedHandler)
     {
         _logger = logger;
         _stateManager = stateManager;
+        _telegramClient = telegramClient;
         _startCommand = startCommand;
         _addCommand = addCommand;
         _completedHandler = completedHandler;
@@ -38,6 +43,7 @@ public class CommandRouter
             { helpCommand.Name, helpCommand },
             { listCommand.Name, listCommand },
             { addCommand.Name, addCommand },
+            { statsCommand.Name, statsCommand },
         };
     }
 
@@ -86,7 +92,13 @@ public class CommandRouter
                 else
                 {
                     _logger.LogWarning("Неизвестная команда /{Command} от пользователя {UserId}", commandName, userId.Value);
-                    // Можно отправить сообщение о неизвестной команде
+                    
+                    // Отправляем сообщение о неизвестной команде
+                    var chatId = update.Message?.Chat.Id;
+                    if (chatId.HasValue)
+                    {
+                        await SendUnknownCommandMessageAsync(chatId.Value, cancellationToken);
+                    }
                 }
                 return;
             }
@@ -143,5 +155,23 @@ public class CommandRouter
         // Извлекаем название команды без / и аргументов
         var command = messageText.TrimStart('/').Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
         return command ?? string.Empty;
+    }
+
+    private async Task SendUnknownCommandMessageAsync(long chatId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var request = new SendMessageRequest
+            {
+                ChatId = chatId,
+                Text = "Введена неизвестная команда, введите /help для списка доступных команд."
+            };
+
+            await _telegramClient.SendMessageAsync(request, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка отправки сообщения о неизвестной команде в чат {ChatId}", chatId);
+        }
     }
 }

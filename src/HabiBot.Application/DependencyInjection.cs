@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IHabitService, HabitService>();
         services.AddScoped<IHabitLogService, HabitLogService>();
+        services.AddScoped<IStatisticsService, StatisticsService>();
 
         return services;
     }

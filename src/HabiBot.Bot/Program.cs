@@ -45,6 +45,7 @@ builder.Services.AddScoped<StartCommand>();
 builder.Services.AddScoped<HelpCommand>();
 builder.Services.AddScoped<ListCommand>();
 builder.Services.AddScoped<AddCommand>();
+builder.Services.AddScoped<StatsCommand>();
 builder.Services.AddScoped<CompletedHandler>();
 
 // Регистрация сервисов бота
