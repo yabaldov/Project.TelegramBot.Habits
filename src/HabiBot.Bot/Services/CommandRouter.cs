@@ -1,4 +1,5 @@
 using HabiBot.Bot.Commands;
+using HabiBot.Bot.Middleware;
 using HabiBot.Bot.StateManagement;
 using HabiBot.Infrastructure.Models.Telegram;
 using HabiBot.Infrastructure.Services;
@@ -14,6 +15,7 @@ public class CommandRouter
     private readonly ILogger<CommandRouter> _logger;
     private readonly IUserStateManager _stateManager;
     private readonly ITelegramApiClient _telegramClient;
+    private readonly RateLimitingService _rateLimiting;
     private readonly Dictionary<string, IBotCommand> _commands;
     private readonly StartCommand _startCommand;
     private readonly AddCommand _addCommand;
@@ -25,6 +27,7 @@ public class CommandRouter
         ILogger<CommandRouter> logger,
         IUserStateManager stateManager,
         ITelegramApiClient telegramClient,
+        RateLimitingService rateLimiting,
         StartCommand startCommand,
         HelpCommand helpCommand,
         ListCommand listCommand,
@@ -37,6 +40,7 @@ public class CommandRouter
         _logger = logger;
         _stateManager = stateManager;
         _telegramClient = telegramClient;
+        _rateLimiting = rateLimiting;
         _startCommand = startCommand;
         _addCommand = addCommand;
         _editCommand = editCommand;
@@ -79,6 +83,23 @@ public class CommandRouter
         if (string.IsNullOrEmpty(messageText) || userId == null)
         {
             _logger.LogDebug("Получено сообщение без текста или UserId");
+            return;
+        }
+
+        // Проверяем Rate Limiting
+        if (!_rateLimiting.TryAcquire(userId.Value, out var retryAfter))
+        {
+            _logger.LogWarning("Rate limit exceeded для пользователя {UserId}. Retry after: {RetryAfter}", 
+                userId.Value, retryAfter);
+            
+            var chatId = update.Message?.Chat.Id;
+            if (chatId.HasValue)
+            {
+                var retryMinutes = (int)Math.Ceiling(retryAfter!.Value.TotalMinutes);
+                await SendMessageAsync(chatId.Value, 
+                    $"⚠️ Превышен лимит запросов. Попробуйте через {retryMinutes} мин.", 
+                    cancellationToken);
+            }
             return;
         }
 
@@ -255,6 +276,23 @@ public class CommandRouter
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка обработки callback query");
+        }
+    }
+
+    private async Task SendMessageAsync(long chatId, string text, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var request = new SendMessageRequest
+            {
+                ChatId = chatId,
+                Text = text
+            };
+            await _telegramClient.SendMessageAsync(request, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка отправки сообщения в чат {ChatId}", chatId);
         }
     }
 

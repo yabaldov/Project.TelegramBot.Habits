@@ -6,39 +6,56 @@ using HabiBot.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 
-var builder = Host.CreateApplicationBuilder(args);
+// Предварительная настройка Serilog для логирования до запуска хоста
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
-// Настройка конфигурации
-builder.Configuration
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-    .AddUserSecrets<Program>()
-    .AddEnvironmentVariables();
-
-// Настройка логирования
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
-
-if (builder.Environment.IsDevelopment())
+try
 {
-    builder.Logging.SetMinimumLevel(LogLevel.Debug);
-}
-else
-{
-    builder.Logging.SetMinimumLevel(LogLevel.Information);
-}
+    Log.Information("Запуск HabiBot");
 
-// Регистрация слоёв приложения
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApplication();
+    var builder = Host.CreateApplicationBuilder(args);
 
-// Регистрация State Management
-builder.Services.AddMemoryCache();
-builder.Services.AddSingleton<IUserStateManager, UserStateManager>();
+    // Настройка конфигурации
+    builder.Configuration
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+        .AddUserSecrets<Program>()
+        .AddEnvironmentVariables();
+
+    // Настройка Serilog из конфигурации
+    builder.Services.AddSerilog((services, lc) => lc
+        .ReadFrom.Configuration(builder.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .WriteTo.Console(
+            outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}")
+        .WriteTo.File(
+            path: "logs/habibot-.log",
+            rollingInterval: RollingInterval.Day,
+            retainedFileCountLimit: 30,
+            outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz}] [{Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"));
+
+    // Регистрация слоёв приложения
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddApplication();
+
+    // Регистрация Rate Limiting
+    builder.Services.Configure<HabiBot.Bot.Middleware.RateLimitingOptions>(
+        builder.Configuration.GetSection(HabiBot.Bot.Middleware.RateLimitingOptions.SectionName));
+    builder.Services.AddSingleton<HabiBot.Bot.Middleware.RateLimitingService>();
+
+    // Регистрация State Management
+    builder.Services.AddMemoryCache();
+    builder.Services.AddSingleton<IUserStateManager, UserStateManager>();
 
 // Регистрация команд
 builder.Services.AddScoped<StartCommand>();
@@ -59,3 +76,16 @@ var host = builder.Build();
 
 // Запуск приложения
 await host.RunAsync();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Приложение завершилось с критической ошибкой");
+    return 1;
+}
+finally
+{
+    Log.Information("Остановка HabiBot");
+    await Log.CloseAndFlushAsync();
+}
+
+return 0;
