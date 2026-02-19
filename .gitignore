@@ -44,6 +44,14 @@ CLAUDE.md
 TODO.md
 AGENTS.md
 GEMINI.md
+docker-compose.yml
+.env
+MIGRATIONS.md
+QUICKSTART.md
+TELEGRAM_SETUP.md
+CHANGELOG.md
+.project-status*
+MVP_SUMMARY.md
 
 # User secrets
 **/appsettings.Development.json
