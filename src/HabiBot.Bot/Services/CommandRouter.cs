@@ -22,6 +22,7 @@ public class CommandRouter
     private readonly EditCommand _editCommand;
     private readonly DeleteCommand _deleteCommand;
     private readonly SetSummaryCommand _setSummaryCommand;
+    private readonly SummaryCommand _summaryCommand;
     private readonly CompletedHandler _completedHandler;
 
     public CommandRouter(
@@ -49,6 +50,7 @@ public class CommandRouter
         _editCommand = editCommand;
         _deleteCommand = deleteCommand;
         _setSummaryCommand = setSummaryCommand;
+        _summaryCommand = summaryCommand;
         _completedHandler = completedHandler;
 
         _commands = new Dictionary<string, IBotCommand>(StringComparer.OrdinalIgnoreCase)
@@ -282,6 +284,13 @@ public class CommandRouter
 
                 case "setsummary":
                     await _setSummaryCommand.HandleCallbackAsync(chatId, userId, parts[1], cancellationToken);
+                    break;
+
+                case "summarycomplete":
+                    if (long.TryParse(parts[1], out var completeHabitId))
+                    {
+                        await _summaryCommand.HandleCompleteCallbackAsync(chatId, userId, completeHabitId, cancellationToken);
+                    }
                     break;
 
                 default:

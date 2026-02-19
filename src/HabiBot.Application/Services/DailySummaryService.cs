@@ -76,6 +76,7 @@ public class DailySummaryService : IDailySummaryService
                 }
                 summary.AvailableToCompleteToday.Add(new UncompletedHabitInfo
                 {
+                    HabitId = habit.Id,
                     HabitName = habit.Name,
                     ScheduledTime = habit.ReminderTime
                 });
@@ -85,11 +86,13 @@ public class DailySummaryService : IDailySummaryService
                 // Привычка не выполнена
                 summary.UncompletedHabits.Add(new UncompletedHabitInfo
                 {
+                    HabitId = habit.Id,
                     HabitName = habit.Name,
                     ScheduledTime = habit.ReminderTime
                 });
                 summary.AvailableToCompleteToday.Add(new UncompletedHabitInfo
                 {
+                    HabitId = habit.Id,
                     HabitName = habit.Name,
                     ScheduledTime = habit.ReminderTime
                 });

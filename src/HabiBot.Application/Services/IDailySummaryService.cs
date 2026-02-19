@@ -90,6 +90,7 @@ public class CompletedHabitInfo
 /// </summary>
 public class UncompletedHabitInfo
 {
+    public long HabitId { get; set; }
     public string HabitName { get; set; } = string.Empty;
     public string? ScheduledTime { get; set; }
 }
