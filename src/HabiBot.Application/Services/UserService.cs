@@ -77,4 +77,25 @@ public class UserService : IUserService
         _logger.LogDebug("Поиск пользователя по ID: {UserId}", id);
         return await _unitOfWork.Users.GetByIdAsync(id, cancellationToken);
     }
+
+    public async Task UpdateDailySummarySettingsAsync(long userId, bool isEnabled, TimeSpan? summaryTime = null, CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug("Обновление настроек сводки для пользователя {UserId}: Enabled={IsEnabled}, Time={SummaryTime}",
+            userId, isEnabled, summaryTime);
+
+        var user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken)
+            ?? throw new InvalidOperationException($"Пользователь с ID {userId} не найден");
+
+        user.IsDailySummaryEnabled = isEnabled;
+
+        if (summaryTime.HasValue)
+        {
+            user.DailySummaryTime = summaryTime.Value;
+        }
+
+        await _unitOfWork.Users.UpdateAsync(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Настройки сводки обновлены для пользователя {UserId}", userId);
+    }
 }

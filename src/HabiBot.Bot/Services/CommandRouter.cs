@@ -21,6 +21,7 @@ public class CommandRouter
     private readonly AddCommand _addCommand;
     private readonly EditCommand _editCommand;
     private readonly DeleteCommand _deleteCommand;
+    private readonly SetSummaryCommand _setSummaryCommand;
     private readonly CompletedHandler _completedHandler;
 
     public CommandRouter(
@@ -34,6 +35,7 @@ public class CommandRouter
         AddCommand addCommand,
         StatsCommand statsCommand,
         SummaryCommand summaryCommand,
+        SetSummaryCommand setSummaryCommand,
         EditCommand editCommand,
         DeleteCommand deleteCommand,
         CompletedHandler completedHandler)
@@ -46,6 +48,7 @@ public class CommandRouter
         _addCommand = addCommand;
         _editCommand = editCommand;
         _deleteCommand = deleteCommand;
+        _setSummaryCommand = setSummaryCommand;
         _completedHandler = completedHandler;
 
         _commands = new Dictionary<string, IBotCommand>(StringComparer.OrdinalIgnoreCase)
@@ -56,6 +59,7 @@ public class CommandRouter
             { addCommand.Name, addCommand },
             { statsCommand.Name, statsCommand },
             { summaryCommand.Name, summaryCommand },
+            { setSummaryCommand.Name, setSummaryCommand },
             { editCommand.Name, editCommand },
             { deleteCommand.Name, deleteCommand },
         };
@@ -193,6 +197,12 @@ public class CommandRouter
                 await _editCommand.HandleTimeInputAsync(chatId2, userId2, messageText, cancellationToken);
                 break;
 
+            case UserState.WaitingForSummaryTime:
+                var chatIdSummary = update.Message?.Chat.Id ?? 0;
+                var userIdSummary = update.Message?.From?.Id ?? 0;
+                await _setSummaryCommand.HandleSummaryTimeInputAsync(chatIdSummary, userIdSummary, messageText, cancellationToken);
+                break;
+
             default:
                 _logger.LogWarning("Неизвестное состояние {State} для пользователя {UserId}", state, userId);
                 _stateManager.ClearState(userId);
@@ -268,6 +278,10 @@ public class CommandRouter
                     {
                         await _deleteCommand.HandleDeleteConfirmAsync(chatId, userId, "no", 0, cancellationToken);
                     }
+                    break;
+
+                case "setsummary":
+                    await _setSummaryCommand.HandleCallbackAsync(chatId, userId, parts[1], cancellationToken);
                     break;
 
                 default:
