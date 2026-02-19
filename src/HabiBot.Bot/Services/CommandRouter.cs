@@ -33,6 +33,7 @@ public class CommandRouter
         ListCommand listCommand,
         AddCommand addCommand,
         StatsCommand statsCommand,
+        SummaryCommand summaryCommand,
         EditCommand editCommand,
         DeleteCommand deleteCommand,
         CompletedHandler completedHandler)
@@ -54,6 +55,7 @@ public class CommandRouter
             { listCommand.Name, listCommand },
             { addCommand.Name, addCommand },
             { statsCommand.Name, statsCommand },
+            { summaryCommand.Name, summaryCommand },
             { editCommand.Name, editCommand },
             { deleteCommand.Name, deleteCommand },
         };

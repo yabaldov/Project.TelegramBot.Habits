@@ -63,6 +63,7 @@ builder.Services.AddScoped<HelpCommand>();
 builder.Services.AddScoped<ListCommand>();
 builder.Services.AddScoped<AddCommand>();
 builder.Services.AddScoped<StatsCommand>();
+builder.Services.AddScoped<SummaryCommand>();
 builder.Services.AddScoped<EditCommand>();
 builder.Services.AddScoped<DeleteCommand>();
 builder.Services.AddScoped<CompletedHandler>();
