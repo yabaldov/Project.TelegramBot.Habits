@@ -277,6 +277,13 @@ public class EditCommand : BotCommandBase
             StateManager.ClearState(chatId);
             await SendMessageAsync(chatId, $"✅ Название привычки изменено на: **{name}**", cancellationToken);
 
+            // Отправляем сообщение о настройках сводки
+            var user = await _userService.GetByTelegramIdAsync(userId, cancellationToken);
+            if (user != null)
+            {
+                await SendMessageAsync(chatId, GetSummaryInfoMessage(user), cancellationToken);
+            }
+
             Logger.LogInformation("Название привычки {HabitId} изменено на {NewName}", habitId, name);
         }
         catch (Exception ex)
@@ -321,6 +328,13 @@ public class EditCommand : BotCommandBase
             StateManager.ClearState(chatId);
             await SendMessageAsync(chatId, $"✅ Время напоминания изменено на: **{time}**", cancellationToken);
 
+            // Отправляем сообщение о настройках сводки
+            var userTime = await _userService.GetByTelegramIdAsync(userId, cancellationToken);
+            if (userTime != null)
+            {
+                await SendMessageAsync(chatId, GetSummaryInfoMessage(userTime), cancellationToken);
+            }
+
             Logger.LogInformation("Время привычки {HabitId} изменено на {NewTime}", habitId, time);
         }
         catch (Exception ex)
@@ -359,6 +373,13 @@ public class EditCommand : BotCommandBase
             StateManager.ClearState(chatId);
             await SendMessageAsync(chatId, $"✅ Частота выполнения изменена на: **{GetFrequencyText(frequencyEnum)}**", cancellationToken);
 
+            // Отправляем сообщение о настройках сводки
+            var userFreq = await _userService.GetByTelegramIdAsync(userId, cancellationToken);
+            if (userFreq != null)
+            {
+                await SendMessageAsync(chatId, GetSummaryInfoMessage(userFreq), cancellationToken);
+            }
+
             Logger.LogInformation("Частота привычки {HabitId} изменена на {NewFrequency}", habitId, frequency);
         }
         catch (Exception ex)
@@ -376,4 +397,18 @@ public class EditCommand : BotCommandBase
         Domain.Enums.HabitFrequency.Custom => "Произвольная",
         _ => frequency.ToString()
     };
+
+    /// <summary>
+    /// Генерирует информационное сообщение о настройках ежедневной сводки
+    /// </summary>
+    private static string GetSummaryInfoMessage(Domain.Entities.User user)
+    {
+        if (!user.IsDailySummaryEnabled)
+        {
+            return "ℹ️ Сводка о выполнении привычек отключена. Ты всегда можешь включить её через /setsummary.";
+        }
+
+        var timeStr = user.DailySummaryTime?.ToString(@"hh\:mm") ?? "21:00";
+        return $"ℹ️ Я буду присылать тебе сводку о выполнении привычек ежедневно в {timeStr}. Это поведение можно изменить или отключить через /setsummary.";
+    }
 }

@@ -25,4 +25,11 @@ public class UserRepository : Repository<User>, IUserRepository
         return await _dbSet
             .AnyAsync(u => u.TelegramUserId == telegramId, cancellationToken);
     }
+
+    public async Task<IEnumerable<User>> GetUsersWithDailySummaryEnabledAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Where(u => u.IsDailySummaryEnabled && u.DailySummaryTime != null && !u.IsDeleted)
+            .ToListAsync(cancellationToken);
+    }
 }

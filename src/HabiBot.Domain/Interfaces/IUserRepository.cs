@@ -16,4 +16,9 @@ public interface IUserRepository : IRepository<User>
     /// Проверить существование пользователя по Telegram ID
     /// </summary>
     Task<bool> ExistsByTelegramIdAsync(long telegramId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Получить всех пользователей с включённой ежедневной сводкой
+    /// </summary>
+    Task<IEnumerable<User>> GetUsersWithDailySummaryEnabledAsync(CancellationToken cancellationToken = default);
 }

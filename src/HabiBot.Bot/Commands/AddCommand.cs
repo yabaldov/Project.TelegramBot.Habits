@@ -185,6 +185,14 @@ public class AddCommand : BotCommandBase
                 "Используй /list чтобы посмотреть все привычки.",
                 cancellationToken);
 
+            // Отправляем сообщение о настройках сводки
+            var user = await _userService.GetByTelegramIdAsync(userId.Value, cancellationToken);
+            if (user != null)
+            {
+                var summaryMessage = GetSummaryInfoMessage(user);
+                await SendMessageAsync(chatId.Value, summaryMessage, cancellationToken);
+            }
+
             StateManager.ClearState(userId.Value);
             Logger.LogInformation("Привычка {HabitName} создана для пользователя {UserId}", habitName, userId.Value);
         }
@@ -196,5 +204,19 @@ public class AddCommand : BotCommandBase
                 cancellationToken);
             StateManager.ClearState(userId.Value);
         }
+    }
+
+    /// <summary>
+    /// Генерирует информационное сообщение о настройках ежедневной сводки
+    /// </summary>
+    private static string GetSummaryInfoMessage(Domain.Entities.User user)
+    {
+        if (!user.IsDailySummaryEnabled)
+        {
+            return "ℹ️ Сводка о выполнении привычек отключена. Ты всегда можешь включить её через /setsummary.";
+        }
+
+        var timeStr = user.DailySummaryTime?.ToString(@"hh\:mm") ?? "21:00";
+        return $"ℹ️ Я буду присылать тебе сводку о выполнении привычек ежедневно в {timeStr}. Это поведение можно изменить или отключить через /setsummary.";
     }
 }

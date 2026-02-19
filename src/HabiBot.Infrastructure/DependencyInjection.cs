@@ -1,10 +1,12 @@
 using HabiBot.Domain.Interfaces;
 using HabiBot.Infrastructure.Data;
+using HabiBot.Infrastructure.Jobs;
 using HabiBot.Infrastructure.Repositories;
 using HabiBot.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Quartz;
 
 namespace HabiBot.Infrastructure;
 
@@ -39,6 +41,23 @@ public static class DependencyInjection
 
         // Регистрация HttpClient для Telegram API
         services.AddHttpClient<ITelegramApiClient, TelegramApiClient>();
+
+        // Регистрация Quartz.NET для планирования задач
+        services.AddQuartz(q =>
+        {
+            // Регистрация DailySummaryJob — запускается каждую минуту
+            var jobKey = new JobKey("DailySummaryJob");
+            q.AddJob<DailySummaryJob>(opts => opts.WithIdentity(jobKey));
+            q.AddTrigger(opts => opts
+                .ForJob(jobKey)
+                .WithIdentity("DailySummaryJob-trigger")
+                .WithCronSchedule("0 * * ? * *")); // Каждую минуту (на 0-й секунде)
+        });
+
+        services.AddQuartzHostedService(options =>
+        {
+            options.WaitForJobsToComplete = true;
+        });
 
         return services;
     }
