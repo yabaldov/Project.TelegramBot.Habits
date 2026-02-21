@@ -84,6 +84,15 @@ public class TelegramApiClient : ITelegramApiClient
         _logger.LogInformation("Callback query {CallbackQueryId} обработан", callbackQueryId);
     }
 
+    public async Task SetMyCommandsAsync(SetMyCommandsRequest request, CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug("Установка списка команд бота ({Count} команд)", request.Commands.Count);
+
+        await PostAsync<bool>("setMyCommands", request, cancellationToken);
+
+        _logger.LogInformation("Список команд бота успешно установлен ({Count} команд)", request.Commands.Count);
+    }
+
     private async Task<T> PostAsync<T>(string method, object request, CancellationToken cancellationToken)
     {
         var json = JsonSerializer.Serialize(request, _jsonOptions);

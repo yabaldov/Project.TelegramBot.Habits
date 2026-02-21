@@ -68,6 +68,25 @@ public class CommandRouter
     }
 
     /// <summary>
+    /// Зарегистрировать команды бота в Telegram (кнопка Menu)
+    /// </summary>
+    public async Task SetBotCommandsAsync(CancellationToken cancellationToken = default)
+    {
+        var request = new SetMyCommandsRequest
+        {
+            Commands = _commands.Values
+                .Select(c => new BotCommand
+                {
+                    Command = c.Name,
+                    Description = c.Description
+                })
+                .ToList()
+        };
+
+        await _telegramClient.SetMyCommandsAsync(request, cancellationToken);
+    }
+
+    /// <summary>
     /// Обработать входящее обновление
     /// </summary>
     public async Task RouteAsync(Update update, CancellationToken cancellationToken = default)

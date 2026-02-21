@@ -1,0 +1,73 @@
+[2026-02-21 16:46:41.320 +04:00] [WRN] The 'HabitFrequency' property 'Frequency' on entity type 'Habit' is configured with a database-generated default, but has no configured sentinel value. The database-generated default will always be used for inserts when the property has the value '0', since this is the CLR default for the 'HabitFrequency' type. Consider using a nullable type, using a nullable backing field, or setting the sentinel value for the property to ensure the database default is used when, and only when, appropriate. See https://aka.ms/efcore-docs-default-values for more information. {"EventId":{"Id":20601,"Name":"Microsoft.EntityFrameworkCore.Model.Validation.BoolWithDefaultWarning"},"SourceContext":"Microsoft.EntityFrameworkCore.Model.Validation","Application":"HabiBot"}
+[2026-02-21 16:46:41.370 +04:00] [INF] Initialized Scheduler Signaller of type: Quartz.Core.SchedulerSignalerImpl {"SourceContext":"Quartz.Core.SchedulerSignalerImpl","Application":"HabiBot"}
+[2026-02-21 16:46:41.370 +04:00] [INF] Quartz Scheduler created {"SourceContext":"Quartz.Core.QuartzScheduler","Application":"HabiBot"}
+[2026-02-21 16:46:41.370 +04:00] [INF] JobFactory set to: Quartz.Simpl.MicrosoftDependencyInjectionJobFactory {"SourceContext":"Quartz.Core.QuartzScheduler","Application":"HabiBot"}
+[2026-02-21 16:46:41.371 +04:00] [INF] RAMJobStore initialized. {"SourceContext":"Quartz.Simpl.RAMJobStore","Application":"HabiBot"}
+[2026-02-21 16:46:41.371 +04:00] [INF] Quartz Scheduler 3.15.1.0 - 'QuartzScheduler' with instanceId 'NON_CLUSTERED' initialized {"SourceContext":"Quartz.Impl.StdSchedulerFactory","Application":"HabiBot"}
+[2026-02-21 16:46:41.371 +04:00] [INF] Using thread pool 'Quartz.Simpl.DefaultThreadPool', size: 10 {"SourceContext":"Quartz.Impl.StdSchedulerFactory","Application":"HabiBot"}
+[2026-02-21 16:46:41.371 +04:00] [INF] Using job store 'Quartz.Simpl.RAMJobStore', supports persistence: False, clustered: False {"SourceContext":"Quartz.Impl.StdSchedulerFactory","Application":"HabiBot"}
+[2026-02-21 16:46:41.374 +04:00] [INF] Adding 1 jobs, 1 triggers. {"SourceContext":"Quartz.ContainerConfigurationProcessor","Application":"HabiBot"}
+[2026-02-21 16:46:41.375 +04:00] [INF] Adding job: DEFAULT.DailySummaryJob {"SourceContext":"Quartz.ContainerConfigurationProcessor","Application":"HabiBot"}
+[2026-02-21 16:46:41.382 +04:00] [INF] Бот запускается... {"SourceContext":"HabiBot.Bot.Services.BotBackgroundService","Application":"HabiBot"}
+[2026-02-21 16:46:41.383 +04:00] [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED started. {"SourceContext":"Quartz.Core.QuartzScheduler","Application":"HabiBot"}
+[2026-02-21 16:46:42.764 +04:00] [INF] Список команд бота успешно установлен (9 команд) {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:46:42.765 +04:00] [INF] Запуск Long Polling... {"SourceContext":"HabiBot.Bot.Services.BotUpdateHandler","Application":"HabiBot"}
+[2026-02-21 16:47:00.402 +04:00] [INF] DailySummaryJob завершён. Отправлено сводок: 0 {"SourceContext":"HabiBot.Infrastructure.Jobs.DailySummaryJob","Application":"HabiBot"}
+[2026-02-21 16:47:12.483 +04:00] [INF] Выполняется команда /list для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:47:12.736 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:47:12.736 +04:00] [INF] Показан список из 1 привычек для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Commands.ListCommand","Application":"HabiBot"}
+[2026-02-21 16:47:57.222 +04:00] [INF] Выполняется команда /help для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:47:57.411 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:47:57.412 +04:00] [INF] Показана справка пользователю 108338946 {"SourceContext":"HabiBot.Bot.Commands.HelpCommand","Application":"HabiBot"}
+[2026-02-21 16:48:00.027 +04:00] [INF] DailySummaryJob завершён. Отправлено сводок: 0 {"SourceContext":"HabiBot.Infrastructure.Jobs.DailySummaryJob","Application":"HabiBot"}
+[2026-02-21 16:48:37.814 +04:00] [INF] Выполняется команда /stats для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:48:38.115 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:48:38.116 +04:00] [INF] Показана статистика "Week" для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Commands.StatsCommand","Application":"HabiBot"}
+[2026-02-21 16:48:51.663 +04:00] [INF] Выполняется команда /summary для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:48:51.889 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:48:51.890 +04:00] [INF] Отправлена сводка для пользователя 108338946 за дату "2026-02-21" {"SourceContext":"HabiBot.Bot.Commands.SummaryCommand","Application":"HabiBot"}
+[2026-02-21 16:49:00.015 +04:00] [INF] DailySummaryJob завершён. Отправлено сводок: 0 {"SourceContext":"HabiBot.Infrastructure.Jobs.DailySummaryJob","Application":"HabiBot"}
+[2026-02-21 16:50:00.007 +04:00] [INF] DailySummaryJob завершён. Отправлено сводок: 0 {"SourceContext":"HabiBot.Infrastructure.Jobs.DailySummaryJob","Application":"HabiBot"}
+[2026-02-21 16:51:00.006 +04:00] [INF] DailySummaryJob завершён. Отправлено сводок: 0 {"SourceContext":"HabiBot.Infrastructure.Jobs.DailySummaryJob","Application":"HabiBot"}
+[2026-02-21 16:51:29.128 +04:00] [INF] Выполняется команда /edit для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:51:29.360 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:51:29.361 +04:00] [INF] Показан список привычек для редактирования пользователю 108338946 {"SourceContext":"HabiBot.Bot.Commands.EditCommand","Application":"HabiBot"}
+[2026-02-21 16:51:32.864 +04:00] [INF] Получен callback query от пользователя 108338946: edit:3 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:51:33.082 +04:00] [INF] Callback query 465312232302277115 обработан {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:51:33.341 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:51:33.342 +04:00] [INF] Показаны параметры привычки 3 для редактирования {"SourceContext":"HabiBot.Bot.Commands.EditCommand","Application":"HabiBot"}
+[2026-02-21 16:51:40.110 +04:00] [INF] Получен callback query от пользователя 108338946: editfield:frequency:3 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:51:40.286 +04:00] [INF] Callback query 465312233750851591 обработан {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:51:40.471 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:51:40.472 +04:00] [INF] Начато редактирование поля frequency привычки 3 {"SourceContext":"HabiBot.Bot.Commands.EditCommand","Application":"HabiBot"}
+[2026-02-21 16:51:44.717 +04:00] [INF] Получен callback query от пользователя 108338946: frequency:Custom:3 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:51:44.888 +04:00] [INF] Callback query 465312230297169211 обработан {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:51:44.969 +04:00] [INF] Привычка обновлена: 3 {"SourceContext":"HabiBot.Application.Services.HabitService","Application":"HabiBot"}
+[2026-02-21 16:51:45.156 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:51:45.356 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:51:45.357 +04:00] [INF] Частота привычки 3 изменена на Custom {"SourceContext":"HabiBot.Bot.Commands.EditCommand","Application":"HabiBot"}
+[2026-02-21 16:52:00.006 +04:00] [INF] DailySummaryJob завершён. Отправлено сводок: 0 {"SourceContext":"HabiBot.Infrastructure.Jobs.DailySummaryJob","Application":"HabiBot"}
+[2026-02-21 16:52:01.659 +04:00] [INF] Получен callback query от пользователя 108338946: editfield:frequency:3 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:52:01.826 +04:00] [INF] Callback query 465312233672934330 обработан {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:52:02.034 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:52:02.034 +04:00] [INF] Начато редактирование поля frequency привычки 3 {"SourceContext":"HabiBot.Bot.Commands.EditCommand","Application":"HabiBot"}
+[2026-02-21 16:52:04.372 +04:00] [INF] Получен callback query от пользователя 108338946: frequency:Daily:3 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:52:04.553 +04:00] [INF] Callback query 465312233938698207 обработан {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:52:04.578 +04:00] [INF] Привычка обновлена: 3 {"SourceContext":"HabiBot.Application.Services.HabitService","Application":"HabiBot"}
+[2026-02-21 16:52:04.778 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:52:04.972 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:52:04.973 +04:00] [INF] Частота привычки 3 изменена на Daily {"SourceContext":"HabiBot.Bot.Commands.EditCommand","Application":"HabiBot"}
+[2026-02-21 16:52:17.046 +04:00] [INF] Выполняется команда /setsummary для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:52:17.242 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:52:17.243 +04:00] [INF] Показаны настройки сводки для пользователя 108338946 {"SourceContext":"HabiBot.Bot.Commands.SetSummaryCommand","Application":"HabiBot"}
+[2026-02-21 16:52:26.184 +04:00] [INF] Получен callback query от пользователя 108338946: setsummary:cancel {"SourceContext":"HabiBot.Bot.Services.CommandRouter","Application":"HabiBot"}
+[2026-02-21 16:52:26.363 +04:00] [INF] Callback query 465312233987965940 обработан {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:52:26.549 +04:00] [INF] Сообщение успешно отправлено в чат 108338946 {"SourceContext":"HabiBot.Infrastructure.Services.TelegramApiClient","Application":"HabiBot"}
+[2026-02-21 16:53:00.004 +04:00] [INF] DailySummaryJob завершён. Отправлено сводок: 0 {"SourceContext":"HabiBot.Infrastructure.Jobs.DailySummaryJob","Application":"HabiBot"}
+[2026-02-21 16:54:00.006 +04:00] [INF] DailySummaryJob завершён. Отправлено сводок: 0 {"SourceContext":"HabiBot.Infrastructure.Jobs.DailySummaryJob","Application":"HabiBot"}
+[2026-02-21 16:54:16.803 +04:00] [INF] Бот останавливается... {"SourceContext":"HabiBot.Bot.Services.BotBackgroundService","Application":"HabiBot"}
+[2026-02-21 16:54:16.805 +04:00] [INF] Long Polling остановлен {"SourceContext":"HabiBot.Bot.Services.BotUpdateHandler","Application":"HabiBot"}
+[2026-02-21 16:54:16.808 +04:00] [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED shutting down. {"SourceContext":"Quartz.Core.QuartzScheduler","Application":"HabiBot"}
+[2026-02-21 16:54:16.809 +04:00] [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED paused. {"SourceContext":"Quartz.Core.QuartzScheduler","Application":"HabiBot"}
+[2026-02-21 16:54:16.812 +04:00] [INF] Scheduler QuartzScheduler_$_NON_CLUSTERED Shutdown complete. {"SourceContext":"Quartz.Core.QuartzScheduler","Application":"HabiBot"}
+[2026-02-21 16:54:16.817 +04:00] [INF] Остановка HabiBot {"Application":"HabiBot"}

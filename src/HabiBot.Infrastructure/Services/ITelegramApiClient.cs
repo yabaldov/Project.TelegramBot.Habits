@@ -26,4 +26,9 @@ public interface ITelegramApiClient
     /// Ответить на callback query
     /// </summary>
     Task AnswerCallbackQueryAsync(string callbackQueryId, string? text = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Установить список команд бота (отображаются в кнопке Menu)
+    /// </summary>
+    Task SetMyCommandsAsync(SetMyCommandsRequest request, CancellationToken cancellationToken = default);
 }
