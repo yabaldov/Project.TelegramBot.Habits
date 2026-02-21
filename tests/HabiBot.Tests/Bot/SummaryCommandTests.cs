@@ -164,7 +164,7 @@ public class SummaryCommandTests
         // Assert
         _telegramClientMock.Verify(
             c => c.SendMessageAsync(
-                It.Is<SendMessageRequest>(r => r.ReplyMarkup != null && r.ReplyMarkup.InlineKeyboard.Count() == 2),
+                It.Is<SendMessageRequest>(r => r.ReplyMarkup != null && ((InlineKeyboardMarkup)r.ReplyMarkup).InlineKeyboard.Count() == 2),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

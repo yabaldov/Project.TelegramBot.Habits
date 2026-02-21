@@ -51,7 +51,8 @@ public class StatsCommand : BotCommandBase
             {
                 await SendMessageAsync(chatId.Value,
                     "Ты не зарегистрирован. Используй /start для регистрации.",
-                    cancellationToken);
+                    cancellationToken,
+                    replyMarkup: ReplyKeyboardHelper.PreRegistrationKeyboard);
                 return;
             }
 

@@ -48,7 +48,8 @@ public class EditCommand : BotCommandBase
             {
                 await SendMessageAsync(chatId.Value,
                     "Вы не зарегистрированы. Используйте /start для регистрации.",
-                    cancellationToken);
+                    cancellationToken,
+                    replyMarkup: ReplyKeyboardHelper.PreRegistrationKeyboard);
                 return;
             }
 

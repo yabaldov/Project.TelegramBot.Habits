@@ -56,7 +56,8 @@ public class SummaryCommand : BotCommandBase
             {
                 await SendMessageAsync(chatId.Value, 
                     "Ты не зарегистрирован. Используй /start для регистрации.", 
-                    cancellationToken);
+                    cancellationToken,
+                    replyMarkup: ReplyKeyboardHelper.PreRegistrationKeyboard);
                 return;
             }
 
@@ -144,7 +145,7 @@ public class SummaryCommand : BotCommandBase
     /// <summary>
     /// Отправить сообщение с HTML-разметкой
     /// </summary>
-    private async Task SendHtmlMessageAsync(long chatId, string text, CancellationToken cancellationToken = default, InlineKeyboardMarkup? replyMarkup = null)
+    private async Task SendHtmlMessageAsync(long chatId, string text, CancellationToken cancellationToken = default, object? replyMarkup = null)
     {
         try
         {

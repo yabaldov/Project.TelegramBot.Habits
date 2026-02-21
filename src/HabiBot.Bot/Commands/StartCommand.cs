@@ -49,7 +49,8 @@ public class StartCommand : BotCommandBase
                 await SendMessageAsync(chatId.Value, 
                     $"Привет, {existingUser.Name}! 👋\n\n" +
                     "Ты уже зарегистрирован. Используй /help для просмотра доступных команд.", 
-                    cancellationToken);
+                    cancellationToken,
+                    replyMarkup: ReplyKeyboardHelper.PostRegistrationKeyboard);
                 
                 StateManager.ClearState(userId.Value);
                 return;
@@ -118,7 +119,8 @@ public class StartCommand : BotCommandBase
                 "• /add - добавить новую привычку\n" +
                 "• /list - посмотреть свои привычки\n" +
                 "• /stats - посмотреть статистику", 
-                cancellationToken);
+                cancellationToken,
+                replyMarkup: ReplyKeyboardHelper.PostRegistrationKeyboard);
 
             StateManager.ClearState(userId.Value);
             Logger.LogInformation("Пользователь {UserId} успешно зарегистрирован с именем {Name}", userId.Value, name);
