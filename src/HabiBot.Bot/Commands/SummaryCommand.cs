@@ -61,15 +61,19 @@ public class SummaryCommand : BotCommandBase
                 return;
             }
 
-            // Получаем сводку за сегодня
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            // Получаем сводку за сегодня с учётом текущего времени пользователя
+            var userNow = GetUserDateTime(user.TimeZone);
+            var today = DateOnly.FromDateTime(userNow);
+            var currentUserTime = TimeOnly.FromDateTime(userNow);
+
             var summary = await _dailySummaryService.GetDailySummaryAsync(
-                user.Id, today, cancellationToken);
+                user.Id, today, currentUserTime, cancellationToken);
 
             var summaryText = await _dailySummaryService.GenerateSummaryTextAsync(
                 user.Id, 
                 today, 
                 includeNextDay: false, 
+                currentUserTime: currentUserTime,
                 cancellationToken);
 
             // Генерируем inline keyboard для невыполненных привычек
@@ -140,6 +144,27 @@ public class SummaryCommand : BotCommandBase
     public static InlineKeyboardMarkup? BuildUncompletedHabitsKeyboard(DailySummaryData summary)
     {
         return SummaryKeyboardBuilder.BuildUncompletedHabitsKeyboard(summary);
+    }
+
+    /// <summary>
+    /// Получает текущее время пользователя с учётом его часового пояса
+    /// </summary>
+    private static DateTime GetUserDateTime(string? timeZone)
+    {
+        if (string.IsNullOrEmpty(timeZone))
+        {
+            return DateTime.UtcNow;
+        }
+
+        try
+        {
+            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
+            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneInfo);
+        }
+        catch (TimeZoneNotFoundException)
+        {
+            return DateTime.UtcNow;
+        }
     }
 
     /// <summary>

@@ -10,9 +10,10 @@ public interface IDailySummaryService
     /// </summary>
     /// <param name="userId">ID пользователя</param>
     /// <param name="date">Дата, за которую нужна сводка</param>
+    /// <param name="currentUserTime">Текущее время пользователя (для определения запланированных привычек)</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Объект с данными сводки</returns>
-    Task<DailySummaryData> GetDailySummaryAsync(long userId, DateOnly date, CancellationToken cancellationToken = default);
+    Task<DailySummaryData> GetDailySummaryAsync(long userId, DateOnly date, TimeOnly? currentUserTime = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сгенерировать текст ежедневной сводки для отправки в Telegram
@@ -20,9 +21,10 @@ public interface IDailySummaryService
     /// <param name="userId">ID пользователя</param>
     /// <param name="date">Дата сводки</param>
     /// <param name="includeNextDay">Включать ли план на следующий день</param>
+    /// <param name="currentUserTime">Текущее время пользователя (для определения запланированных привычек)</param>
     /// <param name="cancellationToken">Токен отмены</param>
     /// <returns>Отформатированный текст сводки</returns>
-    Task<string> GenerateSummaryTextAsync(long userId, DateOnly date, bool includeNextDay = true, CancellationToken cancellationToken = default);
+    Task<string> GenerateSummaryTextAsync(long userId, DateOnly date, bool includeNextDay = true, TimeOnly? currentUserTime = null, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -61,9 +63,14 @@ public class DailySummaryData
     public List<CompletedHabitInfo> CompletedHabits { get; set; } = new();
 
     /// <summary>
-    /// Список невыполненных привычек
+    /// Список невыполненных привычек (время напоминания прошло, но не выполнены)
     /// </summary>
     public List<UncompletedHabitInfo> UncompletedHabits { get; set; } = new();
+
+    /// <summary>
+    /// Список запланированных привычек (время напоминания ещё не наступило)
+    /// </summary>
+    public List<UncompletedHabitInfo> ScheduledHabits { get; set; } = new();
 
     /// <summary>
     /// Список привычек, запланированных на следующий день

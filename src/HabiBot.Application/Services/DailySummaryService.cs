@@ -18,7 +18,7 @@ public class DailySummaryService : IDailySummaryService
         _logger = logger;
     }
 
-    public async Task<DailySummaryData> GetDailySummaryAsync(long userId, DateOnly date, CancellationToken cancellationToken = default)
+    public async Task<DailySummaryData> GetDailySummaryAsync(long userId, DateOnly date, TimeOnly? currentUserTime = null, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Получение сводки для пользователя {UserId} за {Date}", userId, date);
 
@@ -83,13 +83,31 @@ public class DailySummaryService : IDailySummaryService
             }
             else
             {
-                // Привычка не выполнена
-                summary.UncompletedHabits.Add(new UncompletedHabitInfo
+                // Определяем статус привычки по времени напоминания
+                var isScheduled = IsHabitStillScheduled(habit.ReminderTime, currentUserTime);
+
+                if (isScheduled)
                 {
-                    HabitId = habit.Id,
-                    HabitName = habit.Name,
-                    ScheduledTime = habit.ReminderTime
-                });
+                    // Время напоминания ещё не наступило — привычка запланирована
+                    summary.ScheduledHabits.Add(new UncompletedHabitInfo
+                    {
+                        HabitId = habit.Id,
+                        HabitName = habit.Name,
+                        ScheduledTime = habit.ReminderTime
+                    });
+                }
+                else
+                {
+                    // Время напоминания прошло — привычка не выполнена
+                    summary.UncompletedHabits.Add(new UncompletedHabitInfo
+                    {
+                        HabitId = habit.Id,
+                        HabitName = habit.Name,
+                        ScheduledTime = habit.ReminderTime
+                    });
+                }
+
+                // В обоих случаях можно отметить выполнение
                 summary.AvailableToCompleteToday.Add(new UncompletedHabitInfo
                 {
                     HabitId = habit.Id,
@@ -122,11 +140,11 @@ public class DailySummaryService : IDailySummaryService
         return summary;
     }
 
-    public async Task<string> GenerateSummaryTextAsync(long userId, DateOnly date, bool includeNextDay = true, CancellationToken cancellationToken = default)
+    public async Task<string> GenerateSummaryTextAsync(long userId, DateOnly date, bool includeNextDay = true, TimeOnly? currentUserTime = null, CancellationToken cancellationToken = default)
     {
         _logger.LogDebug("Генерация текста сводки для пользователя {UserId} за {Date}", userId, date);
 
-        var summary = await GetDailySummaryAsync(userId, date, cancellationToken);
+        var summary = await GetDailySummaryAsync(userId, date, currentUserTime, cancellationToken);
 
         var lines = new List<string>();
 
@@ -160,6 +178,18 @@ public class DailySummaryService : IDailySummaryService
         {
             lines.Add("❌ <b>Невыполненные привычки:</b>");
             foreach (var habit in summary.UncompletedHabits.OrderBy(h => h.ScheduledTime))
+            {
+                var timeStr = !string.IsNullOrEmpty(habit.ScheduledTime) ? habit.ScheduledTime : "без времени";
+                lines.Add($"  • {habit.HabitName} - {timeStr}");
+            }
+            lines.Add("");
+        }
+
+        // Запланированные привычки (время напоминания ещё не наступило)
+        if (summary.ScheduledHabits.Any())
+        {
+            lines.Add("🕐 <b>Запланировано:</b>");
+            foreach (var habit in summary.ScheduledHabits.OrderBy(h => h.ScheduledTime))
             {
                 var timeStr = !string.IsNullOrEmpty(habit.ScheduledTime) ? habit.ScheduledTime : "без времени";
                 lines.Add($"  • {habit.HabitName} - {timeStr}");
@@ -218,5 +248,24 @@ public class DailySummaryService : IDailySummaryService
     {
         return createdDate.DayOfWeek == currentDate.ToDateTime(TimeOnly.MinValue).DayOfWeek
                && (currentDate.ToDateTime(TimeOnly.MinValue) - createdDate).Days >= 0;
+    }
+
+    /// <summary>
+    /// Проверяет, ещё ли не наступило время напоминания для привычки.
+    /// Возвращает true, если время напоминания задано и текущее время ≤ времени напоминания.
+    /// </summary>
+    private static bool IsHabitStillScheduled(string? reminderTime, TimeOnly? currentUserTime)
+    {
+        if (currentUserTime == null || string.IsNullOrEmpty(reminderTime))
+        {
+            return false;
+        }
+
+        if (TimeOnly.TryParse(reminderTime, out var habitTime))
+        {
+            return currentUserTime.Value <= habitTime;
+        }
+
+        return false;
     }
 }

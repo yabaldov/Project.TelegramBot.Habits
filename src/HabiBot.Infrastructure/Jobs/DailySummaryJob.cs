@@ -62,18 +62,21 @@ public class DailySummaryJob : IJob
                     _logger.LogInformation("Отправка сводки пользователю {UserId} ({TelegramId})",
                         user.Id, user.TelegramUserId);
 
-                    // Определяем дату для сводки в часовом поясе пользователя
-                    var userDate = GetUserDate(user, now);
+                    // Определяем дату и время для сводки в часовом поясе пользователя
+                    var userDateTime = GetUserDateTime(user, now);
+                    var userDate = DateOnly.FromDateTime(userDateTime);
+                    var currentUserTime = TimeOnly.FromDateTime(userDateTime);
 
                     // Получаем данные сводки для генерации inline keyboard
                     var summaryData = await dailySummaryService.GetDailySummaryAsync(
-                        user.Id, userDate, context.CancellationToken);
+                        user.Id, userDate, currentUserTime, context.CancellationToken);
 
                     // Генерируем текст сводки (с планом на следующий день — это плановая сводка)
                     var summaryText = await dailySummaryService.GenerateSummaryTextAsync(
                         user.Id,
                         userDate,
                         includeNextDay: true,
+                        currentUserTime: currentUserTime,
                         context.CancellationToken);
 
                     // Генерируем inline keyboard для невыполненных привычек

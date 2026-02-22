@@ -83,11 +83,11 @@ public class SummaryCommandTests
             .ReturnsAsync(user);
 
         _dailySummaryServiceMock
-            .Setup(s => s.GetDailySummaryAsync(1, It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.GetDailySummaryAsync(1, It.IsAny<DateOnly>(), It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(summaryData);
 
         _dailySummaryServiceMock
-            .Setup(s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<CancellationToken>()))
+            .Setup(s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("<b>Сводка</b>");
 
         // Act
@@ -114,11 +114,11 @@ public class SummaryCommandTests
             .ReturnsAsync(user);
 
         _dailySummaryServiceMock
-            .Setup(s => s.GetDailySummaryAsync(1, It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.GetDailySummaryAsync(1, It.IsAny<DateOnly>(), It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(summaryData);
 
         _dailySummaryServiceMock
-            .Setup(s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<CancellationToken>()))
+            .Setup(s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("Сводка");
 
         // Act
@@ -126,7 +126,7 @@ public class SummaryCommandTests
 
         // Assert
         _dailySummaryServiceMock.Verify(
-            s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<CancellationToken>()),
+            s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 
@@ -143,6 +143,11 @@ public class SummaryCommandTests
             {
                 new() { HabitId = 10, HabitName = "Медитация", ScheduledTime = "08:00" },
                 new() { HabitId = 11, HabitName = "Чтение", ScheduledTime = "20:00" }
+            },
+            AvailableToCompleteToday = new List<UncompletedHabitInfo>
+            {
+                new() { HabitId = 10, HabitName = "Медитация", ScheduledTime = "08:00" },
+                new() { HabitId = 11, HabitName = "Чтение", ScheduledTime = "20:00" }
             }
         };
 
@@ -151,11 +156,11 @@ public class SummaryCommandTests
             .ReturnsAsync(user);
 
         _dailySummaryServiceMock
-            .Setup(s => s.GetDailySummaryAsync(1, It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.GetDailySummaryAsync(1, It.IsAny<DateOnly>(), It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(summaryData);
 
         _dailySummaryServiceMock
-            .Setup(s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<CancellationToken>()))
+            .Setup(s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("Сводка");
 
         // Act
@@ -182,11 +187,11 @@ public class SummaryCommandTests
             .ReturnsAsync(user);
 
         _dailySummaryServiceMock
-            .Setup(s => s.GetDailySummaryAsync(1, It.IsAny<DateOnly>(), It.IsAny<CancellationToken>()))
+            .Setup(s => s.GetDailySummaryAsync(1, It.IsAny<DateOnly>(), It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(summaryData);
 
         _dailySummaryServiceMock
-            .Setup(s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<CancellationToken>()))
+            .Setup(s => s.GenerateSummaryTextAsync(1, It.IsAny<DateOnly>(), false, It.IsAny<TimeOnly?>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("Сводка");
 
         // Act
@@ -331,6 +336,11 @@ public class SummaryCommandTests
         {
             UserId = 1,
             UncompletedHabits = new List<UncompletedHabitInfo>
+            {
+                new() { HabitId = 10, HabitName = "Медитация", ScheduledTime = "08:00" },
+                new() { HabitId = 11, HabitName = "Чтение", ScheduledTime = "20:00" }
+            },
+            AvailableToCompleteToday = new List<UncompletedHabitInfo>
             {
                 new() { HabitId = 10, HabitName = "Медитация", ScheduledTime = "08:00" },
                 new() { HabitId = 11, HabitName = "Чтение", ScheduledTime = "20:00" }
