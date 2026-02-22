@@ -28,4 +28,12 @@ public class HabitRepository : Repository<Habit>, IHabitRepository
             .Include(h => h.Logs)
             .FirstOrDefaultAsync(h => h.Id == id, cancellationToken);
     }
+
+    public async Task<IEnumerable<Habit>> GetHabitsWithReminderAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .Include(h => h.User)
+            .Where(h => !h.IsDeleted && h.ReminderTime != null && !h.User.IsDeleted)
+            .ToListAsync(cancellationToken);
+    }
 }

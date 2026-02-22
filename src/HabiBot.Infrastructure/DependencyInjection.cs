@@ -46,11 +46,19 @@ public static class DependencyInjection
         services.AddQuartz(q =>
         {
             // Регистрация DailySummaryJob — запускается каждую минуту
-            var jobKey = new JobKey("DailySummaryJob");
-            q.AddJob<DailySummaryJob>(opts => opts.WithIdentity(jobKey));
+            var dailySummaryJobKey = new JobKey("DailySummaryJob");
+            q.AddJob<DailySummaryJob>(opts => opts.WithIdentity(dailySummaryJobKey));
             q.AddTrigger(opts => opts
-                .ForJob(jobKey)
+                .ForJob(dailySummaryJobKey)
                 .WithIdentity("DailySummaryJob-trigger")
+                .WithCronSchedule("0 * * ? * *")); // Каждую минуту (на 0-й секунде)
+
+            // Регистрация ReminderJob — запускается каждую минуту для отправки напоминаний о привычках
+            var reminderJobKey = new JobKey("ReminderJob");
+            q.AddJob<ReminderJob>(opts => opts.WithIdentity(reminderJobKey));
+            q.AddTrigger(opts => opts
+                .ForJob(reminderJobKey)
+                .WithIdentity("ReminderJob-trigger")
                 .WithCronSchedule("0 * * ? * *")); // Каждую минуту (на 0-й секунде)
         });
 

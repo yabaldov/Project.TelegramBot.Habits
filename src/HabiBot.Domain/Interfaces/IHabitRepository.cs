@@ -16,4 +16,9 @@ public interface IHabitRepository : IRepository<Habit>
     /// Получить привычку по ID с включёнными записями выполнения
     /// </summary>
     Task<Habit?> GetByIdWithLogsAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Получить все активные привычки с настроенным временем напоминания (включая пользователя)
+    /// </summary>
+    Task<IEnumerable<Habit>> GetHabitsWithReminderAsync(CancellationToken cancellationToken = default);
 }
