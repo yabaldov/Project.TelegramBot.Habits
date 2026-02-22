@@ -56,7 +56,7 @@ public class SetTimezoneCommand : BotCommandBase
                 $"🕐 Текущий часовой пояс: {currentTz}\n\n" +
                 "Введи новый часовой пояс в виде смещения от UTC.\n" +
                 "Примеры: +3, -5, +5:30, 0\n" +
-                "(Москва = +3, Киев = +2, Лондон = 0)",
+                "(Москва = +3, Абакан = +7, Лондон = 0)",
                 cancellationToken);
 
             StateManager.SetData(userId.Value, "UserId", user.Id);

@@ -108,7 +108,7 @@ public class StartCommand : BotCommandBase
             await SendMessageAsync(chatId.Value,
                 "Укажи свой часовой пояс в виде смещения от UTC.\n\n" +
                 "Примеры: +3, -5, +5:30, 0\n" +
-                "(Москва = +3, Киев = +2, Лондон = 0)",
+                "(Москва = +3, Абакан = +7, Лондон = 0)",
                 cancellationToken);
 
             StateManager.SetState(userId.Value, UserState.WaitingForTimeZone);
