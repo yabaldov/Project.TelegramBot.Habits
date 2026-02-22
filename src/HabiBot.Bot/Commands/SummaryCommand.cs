@@ -159,28 +159,4 @@ public class SummaryCommand : BotCommandBase
 
         return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tzInfo);
     }
-
-    /// <summary>
-    /// Отправить сообщение с HTML-разметкой
-    /// </summary>
-    private async Task SendHtmlMessageAsync(long chatId, string text, CancellationToken cancellationToken = default, object? replyMarkup = null)
-    {
-        try
-        {
-            var request = new SendMessageRequest
-            {
-                ChatId = chatId,
-                Text = text,
-                ParseMode = "HTML",
-                ReplyMarkup = replyMarkup
-            };
-            await TelegramClient.SendMessageAsync(request, cancellationToken);
-            Logger.LogDebug("Отправлено HTML-сообщение в чат {ChatId}", chatId);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Ошибка отправки HTML-сообщения в чат {ChatId}", chatId);
-            throw;
-        }
-    }
 }
