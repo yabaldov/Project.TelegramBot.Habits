@@ -43,5 +43,10 @@ public enum UserState
     /// <summary>
     /// Ожидание ввода времени для ежедневной сводки
     /// </summary>
-    WaitingForSummaryTime
+    WaitingForSummaryTime,
+
+    /// <summary>
+    /// Ожидание ввода часового пояса (UTC-смещения)
+    /// </summary>
+    WaitingForTimeZone
 }

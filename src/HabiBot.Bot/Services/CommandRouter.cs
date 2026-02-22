@@ -24,6 +24,7 @@ public class CommandRouter
     private readonly SetSummaryCommand _setSummaryCommand;
     private readonly SummaryCommand _summaryCommand;
     private readonly CompletedHandler _completedHandler;
+    private readonly SetTimezoneCommand _setTimezoneCommand;
 
     public CommandRouter(
         ILogger<CommandRouter> logger,
@@ -39,7 +40,8 @@ public class CommandRouter
         SetSummaryCommand setSummaryCommand,
         EditCommand editCommand,
         DeleteCommand deleteCommand,
-        CompletedHandler completedHandler)
+        CompletedHandler completedHandler,
+        SetTimezoneCommand setTimezoneCommand)
     {
         _logger = logger;
         _stateManager = stateManager;
@@ -52,6 +54,7 @@ public class CommandRouter
         _setSummaryCommand = setSummaryCommand;
         _summaryCommand = summaryCommand;
         _completedHandler = completedHandler;
+        _setTimezoneCommand = setTimezoneCommand;
 
         _commands = new Dictionary<string, IBotCommand>(StringComparer.OrdinalIgnoreCase)
         {
@@ -64,6 +67,7 @@ public class CommandRouter
             { setSummaryCommand.Name, setSummaryCommand },
             { editCommand.Name, editCommand },
             { deleteCommand.Name, deleteCommand },
+            { setTimezoneCommand.Name, setTimezoneCommand },
         };
     }
 
@@ -222,6 +226,22 @@ public class CommandRouter
                 var chatIdSummary = update.Message?.Chat.Id ?? 0;
                 var userIdSummary = update.Message?.From?.Id ?? 0;
                 await _setSummaryCommand.HandleSummaryTimeInputAsync(chatIdSummary, userIdSummary, messageText, cancellationToken);
+                break;
+
+            case UserState.WaitingForTimeZone:
+                var chatIdTz = update.Message?.Chat.Id ?? 0;
+                var userIdTz = update.Message?.From?.Id ?? 0;
+                var userStateTz = _stateManager.GetData<long>(userIdTz, "UserId");
+                if (userStateTz != 0)
+                {
+                    // Уже зарегистрированный пользователь меняет TZ через /settimezone
+                    await _setTimezoneCommand.HandleTimeZoneInputAsync(chatIdTz, userIdTz, messageText, cancellationToken);
+                }
+                else
+                {
+                    // Регистрация — ввод TZ после имени
+                    await _startCommand.HandleTimeZoneInputAsync(update, messageText, cancellationToken);
+                }
                 break;
 
             default:

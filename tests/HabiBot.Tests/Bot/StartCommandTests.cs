@@ -100,7 +100,7 @@ public class StartCommandTests
     }
 
     [Fact]
-    public async Task HandleNameInputAsync_ShouldCreateUser_WhenValidName()
+    public async Task HandleNameInputAsync_ShouldAskForTimeZone_WhenValidName()
     {
         // Arrange
         var userId = 123456789L;
@@ -108,12 +108,44 @@ public class StartCommandTests
         var name = "Алексей";
         var update = CreateUpdate(userId, chatId, name);
 
+        // Act
+        await _startCommand.HandleNameInputAsync(update, name);
+
+        // Assert — пользователь НЕ создаётся, а переходим к вводу часового пояса
+        _userServiceMock.Verify(
+            s => s.CreateUserAsync(It.IsAny<CreateUserDto>(), It.IsAny<CancellationToken>()),
+            Times.Never);
+
+        _stateManagerMock.Verify(s => s.SetData(userId, "RegistrationName", name), Times.Once);
+        _stateManagerMock.Verify(s => s.SetState(userId, UserState.WaitingForTimeZone), Times.Once);
+
+        _telegramClientMock.Verify(
+            c => c.SendMessageAsync(
+                It.Is<SendMessageRequest>(r => r.ChatId == chatId && r.Text.Contains("часовой пояс")),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task HandleTimeZoneInputAsync_ShouldCreateUser_WhenValidTimeZone()
+    {
+        // Arrange
+        var userId = 123456789L;
+        var chatId = 123456789L;
+        var update = CreateUpdate(userId, chatId, "+3");
+
+        _stateManagerMock.Setup(s => s.GetData<string>(userId, "RegistrationName")).Returns("Алексей");
+        _stateManagerMock.Setup(s => s.GetData<string>(userId, "TelegramFirstName")).Returns("Test");
+        _stateManagerMock.Setup(s => s.GetData<string>(userId, "TelegramLastName")).Returns("");
+        _stateManagerMock.Setup(s => s.GetData<string>(userId, "TelegramUserName")).Returns("");
+
         var createdUser = new User
         {
             Id = 1,
             TelegramUserId = userId,
             TelegramChatId = chatId,
-            Name = name
+            Name = "Алексей",
+            TimeZone = "+03:00"
         };
 
         _userServiceMock
@@ -121,18 +153,16 @@ public class StartCommandTests
             .ReturnsAsync(createdUser);
 
         // Act
-        await _startCommand.HandleNameInputAsync(update, name);
+        await _startCommand.HandleTimeZoneInputAsync(update, "+3");
 
         // Assert
         _userServiceMock.Verify(
             s => s.CreateUserAsync(
-                It.Is<CreateUserDto>(dto => dto.TelegramUserId == userId && dto.TelegramChatId == chatId && dto.Name == name),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-
-        _telegramClientMock.Verify(
-            c => c.SendMessageAsync(
-                It.Is<SendMessageRequest>(r => r.ChatId == chatId && r.Text.Contains("Алексей")),
+                It.Is<CreateUserDto>(dto =>
+                    dto.TelegramUserId == userId &&
+                    dto.TelegramChatId == chatId &&
+                    dto.Name == "Алексей" &&
+                    dto.TimeZone == "+03:00"),
                 It.IsAny<CancellationToken>()),
             Times.Once);
 

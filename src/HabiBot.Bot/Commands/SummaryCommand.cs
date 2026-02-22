@@ -151,20 +151,13 @@ public class SummaryCommand : BotCommandBase
     /// </summary>
     private static DateTime GetUserDateTime(string? timeZone)
     {
-        if (string.IsNullOrEmpty(timeZone))
+        var tzInfo = TimeZoneParser.ToTimeZoneInfo(timeZone);
+        if (tzInfo == null)
         {
             return DateTime.UtcNow;
         }
 
-        try
-        {
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(timeZone);
-            return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timeZoneInfo);
-        }
-        catch (TimeZoneNotFoundException)
-        {
-            return DateTime.UtcNow;
-        }
+        return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tzInfo);
     }
 
     /// <summary>

@@ -133,22 +133,13 @@ public class DailySummaryJob : IJob
     /// </summary>
     private DateTime GetUserDateTime(Domain.Entities.User user, DateTime utcNow)
     {
-        if (string.IsNullOrEmpty(user.TimeZone))
+        var tzInfo = HabiBot.Application.Services.TimeZoneParser.ToTimeZoneInfo(user.TimeZone);
+        if (tzInfo == null)
         {
             return utcNow;
         }
 
-        try
-        {
-            var timeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(user.TimeZone);
-            return TimeZoneInfo.ConvertTimeFromUtc(utcNow, timeZoneInfo);
-        }
-        catch (TimeZoneNotFoundException)
-        {
-            _logger.LogWarning("Часовой пояс {TimeZone} не найден для пользователя {UserId}",
-                user.TimeZone, user.Id);
-            return utcNow;
-        }
+        return TimeZoneInfo.ConvertTimeFromUtc(utcNow, tzInfo);
     }
 
     /// <summary>

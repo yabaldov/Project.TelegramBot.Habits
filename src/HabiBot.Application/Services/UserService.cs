@@ -98,4 +98,19 @@ public class UserService : IUserService
 
         _logger.LogInformation("Настройки сводки обновлены для пользователя {UserId}", userId);
     }
+
+    public async Task UpdateTimeZoneAsync(long userId, string timeZone, CancellationToken cancellationToken = default)
+    {
+        _logger.LogDebug("Обновление часового пояса для пользователя {UserId}: {TimeZone}", userId, timeZone);
+
+        var user = await _unitOfWork.Users.GetByIdAsync(userId, cancellationToken)
+            ?? throw new InvalidOperationException($"Пользователь с ID {userId} не найден");
+
+        user.TimeZone = timeZone;
+
+        await _unitOfWork.Users.UpdateAsync(user);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Часовой пояс обновлён для пользователя {UserId}: {TimeZone}", userId, timeZone);
+    }
 }
