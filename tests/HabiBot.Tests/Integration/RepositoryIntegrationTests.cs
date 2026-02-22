@@ -374,4 +374,135 @@ public class RepositoryIntegrationTests : IDisposable
         isCompleted.Should().BeTrue();
         isNotCompleted.Should().BeFalse();
     }
+
+    [Fact]
+    public async Task HabitRepository_GetHabitsWithReminderAsync_ReturnsOnlyHabitsWithReminderTime()
+    {
+        // Arrange
+        var user = new User
+        {
+            TelegramUserId = 600001,
+            TelegramChatId = 600001,
+            Name = "Reminder Tester",
+            RegisteredAt = DateTime.UtcNow
+        };
+        await _userRepository.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        var habitWithReminder = new Habit
+        {
+            UserId = user.Id,
+            Name = "С напоминанием",
+            ReminderTime = "08:00"
+        };
+        var habitWithoutReminder = new Habit
+        {
+            UserId = user.Id,
+            Name = "Без напоминания",
+            ReminderTime = null
+        };
+
+        await _habitRepository.AddAsync(habitWithReminder);
+        await _habitRepository.AddAsync(habitWithoutReminder);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var habits = await _habitRepository.GetHabitsWithReminderAsync();
+
+        // Assert
+        habits.Should().HaveCount(1);
+        habits.Single().Name.Should().Be("С напоминанием");
+        habits.Single().User.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task HabitRepository_GetHabitsWithReminderAsync_ExcludesDeletedHabits()
+    {
+        // Arrange
+        var user = new User
+        {
+            TelegramUserId = 600002,
+            TelegramChatId = 600002,
+            Name = "Deleted Habit Tester",
+            RegisteredAt = DateTime.UtcNow
+        };
+        await _userRepository.AddAsync(user);
+        await _context.SaveChangesAsync();
+
+        var activeHabit = new Habit
+        {
+            UserId = user.Id,
+            Name = "Активная",
+            ReminderTime = "09:00"
+        };
+        var deletedHabit = new Habit
+        {
+            UserId = user.Id,
+            Name = "Удалённая",
+            ReminderTime = "10:00",
+            IsDeleted = true
+        };
+
+        await _habitRepository.AddAsync(activeHabit);
+        await _habitRepository.AddAsync(deletedHabit);
+        await _context.SaveChangesAsync();
+
+        // Act
+        var habits = await _habitRepository.GetHabitsWithReminderAsync();
+
+        // Assert
+        habits.Should().HaveCount(1);
+        habits.Single().Name.Should().Be("Активная");
+    }
+
+    [Fact]
+    public async Task HabitRepository_GetHabitsWithReminderAsync_ExcludesHabitsOfDeletedUsers()
+    {
+        // Arrange
+        var activeUser = new User
+        {
+            TelegramUserId = 600003,
+            TelegramChatId = 600003,
+            Name = "Active User",
+            RegisteredAt = DateTime.UtcNow
+        };
+        var deletedUser = new User
+        {
+            TelegramUserId = 600004,
+            TelegramChatId = 600004,
+            Name = "Deleted User",
+            RegisteredAt = DateTime.UtcNow,
+            IsDeleted = true
+        };
+        await _userRepository.AddAsync(activeUser);
+        await _userRepository.AddAsync(deletedUser);
+        await _context.SaveChangesAsync();
+
+        // Для удалённого пользователя обходим глобальный фильтр через прямую запись
+        _context.ChangeTracker.Clear();
+        var deletedUserInDb = await _context.Users
+            .IgnoreQueryFilters()
+            .FirstAsync(u => u.TelegramUserId == 600004);
+
+        await _habitRepository.AddAsync(new Habit
+        {
+            UserId = activeUser.Id,
+            Name = "Привычка активного",
+            ReminderTime = "08:00"
+        });
+        await _habitRepository.AddAsync(new Habit
+        {
+            UserId = deletedUserInDb.Id,
+            Name = "Привычка удалённого",
+            ReminderTime = "09:00"
+        });
+        await _context.SaveChangesAsync();
+
+        // Act
+        var habits = await _habitRepository.GetHabitsWithReminderAsync();
+
+        // Assert
+        habits.Should().HaveCount(1);
+        habits.Single().Name.Should().Be("Привычка активного");
+    }
 }
