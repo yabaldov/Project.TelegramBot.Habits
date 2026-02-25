@@ -50,7 +50,8 @@ public class ListCommand : BotCommandBase
             {
                 await SendMessageAsync(chatId.Value, 
                     "Ты не зарегистрирован. Используй /start для регистрации.", 
-                    cancellationToken);
+                    cancellationToken,
+                    replyMarkup: ReplyKeyboardHelper.PreRegistrationKeyboard);
                 return;
             }
 
@@ -79,14 +80,14 @@ public class ListCommand : BotCommandBase
                     _ => "По расписанию"
                 };
 
-                sb.AppendLine($"• {habit.Name}");
-                sb.AppendLine($"  ⏰ {habit.ReminderTime} ({frequency})");
+                sb.AppendLine($"• `{habit.Name}`");
+                sb.AppendLine($"  ⏰ {habit.ReminderTime} \\({frequency}\\)");
                 sb.AppendLine();
             }
 
-            sb.AppendLine("Чтобы отметить выполнение, напиши: Выполнено! [название привычки]");
+            sb.AppendLine("Чтобы отметить выполнение, напиши: Выполнено\\! \\[название привычки\\]");
 
-            await SendMessageAsync(chatId.Value, sb.ToString(), cancellationToken);
+            await SendMarkdownMessageAsync(chatId.Value, sb.ToString(), cancellationToken);
             Logger.LogInformation("Показан список из {Count} привычек для пользователя {UserId}", habits.Count(), userId.Value);
         }
         catch (Exception ex)

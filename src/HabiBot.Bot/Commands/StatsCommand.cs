@@ -51,7 +51,8 @@ public class StatsCommand : BotCommandBase
             {
                 await SendMessageAsync(chatId.Value,
                     "Ты не зарегистрирован. Используй /start для регистрации.",
-                    cancellationToken);
+                    cancellationToken,
+                    replyMarkup: ReplyKeyboardHelper.PreRegistrationKeyboard);
                 return;
             }
 
@@ -60,7 +61,7 @@ public class StatsCommand : BotCommandBase
             var stats = await GetStatisticsAsync(user.Id, period, cancellationToken);
 
             var message = FormatStatistics(stats, period);
-            await SendMessageAsync(chatId.Value, message, cancellationToken);
+            await SendHtmlMessageAsync(chatId.Value, message, cancellationToken);
 
             Logger.LogInformation("Показана статистика {Period} для пользователя {UserId}", period, userId.Value);
         }
@@ -97,7 +98,7 @@ public class StatsCommand : BotCommandBase
             _ => "за неделю"
         };
 
-        sb.AppendLine($"📊 **Статистика {periodName}**");
+        sb.AppendLine($"📊 <b>Статистика {periodName}</b>");
         sb.AppendLine();
         sb.AppendLine($"📅 Период: {stats.PeriodStart:dd.MM.yyyy} - {stats.PeriodEnd:dd.MM.yyyy}");
         sb.AppendLine($"🎯 Привычек: {stats.TotalHabits}");
@@ -117,12 +118,12 @@ public class StatsCommand : BotCommandBase
             return sb.ToString();
         }
 
-        sb.AppendLine("**Детальная статистика:**");
+        sb.AppendLine("<b>Детальная статистика:</b>");
         sb.AppendLine();
 
         foreach (var habitStat in stats.HabitStats.OrderByDescending(h => h.CompletionRate))
         {
-            sb.AppendLine($"📌 **{habitStat.HabitName}**");
+            sb.AppendLine($"📌 <b>{habitStat.HabitName}</b>");
             sb.AppendLine($"   Выполнено: {habitStat.CompletedCount}/{habitStat.ExpectedCount} ({habitStat.CompletionRate:F0}%)");
 
             if (habitStat.CurrentStreak > 0)

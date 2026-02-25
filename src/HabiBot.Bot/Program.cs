@@ -63,9 +63,12 @@ builder.Services.AddScoped<HelpCommand>();
 builder.Services.AddScoped<ListCommand>();
 builder.Services.AddScoped<AddCommand>();
 builder.Services.AddScoped<StatsCommand>();
+builder.Services.AddScoped<SummaryCommand>();
+builder.Services.AddScoped<SetSummaryCommand>();
 builder.Services.AddScoped<EditCommand>();
 builder.Services.AddScoped<DeleteCommand>();
 builder.Services.AddScoped<CompletedHandler>();
+builder.Services.AddScoped<SetTimezoneCommand>();
 
 // Регистрация сервисов бота
 builder.Services.AddSingleton<CommandRouter>();

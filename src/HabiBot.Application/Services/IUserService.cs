@@ -27,4 +27,18 @@ public interface IUserService
     /// Получить пользователя по ID
     /// </summary>
     Task<User?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Обновить настройки ежедневной сводки
+    /// </summary>
+    /// <param name="userId">ID пользователя</param>
+    /// <param name="isEnabled">Включена ли сводка</param>
+    /// <param name="summaryTime">Время отправки сводки (nullable)</param>
+    /// <param name="cancellationToken">Токен отмены</param>
+    Task UpdateDailySummarySettingsAsync(long userId, bool isEnabled, TimeSpan? summaryTime = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Обновить часовой пояс пользователя
+    /// </summary>
+    Task UpdateTimeZoneAsync(long userId, string timeZone, CancellationToken cancellationToken = default);
 }

@@ -21,7 +21,10 @@ public class CommandRouter
     private readonly AddCommand _addCommand;
     private readonly EditCommand _editCommand;
     private readonly DeleteCommand _deleteCommand;
+    private readonly SetSummaryCommand _setSummaryCommand;
+    private readonly SummaryCommand _summaryCommand;
     private readonly CompletedHandler _completedHandler;
+    private readonly SetTimezoneCommand _setTimezoneCommand;
 
     public CommandRouter(
         ILogger<CommandRouter> logger,
@@ -33,9 +36,12 @@ public class CommandRouter
         ListCommand listCommand,
         AddCommand addCommand,
         StatsCommand statsCommand,
+        SummaryCommand summaryCommand,
+        SetSummaryCommand setSummaryCommand,
         EditCommand editCommand,
         DeleteCommand deleteCommand,
-        CompletedHandler completedHandler)
+        CompletedHandler completedHandler,
+        SetTimezoneCommand setTimezoneCommand)
     {
         _logger = logger;
         _stateManager = stateManager;
@@ -45,7 +51,10 @@ public class CommandRouter
         _addCommand = addCommand;
         _editCommand = editCommand;
         _deleteCommand = deleteCommand;
+        _setSummaryCommand = setSummaryCommand;
+        _summaryCommand = summaryCommand;
         _completedHandler = completedHandler;
+        _setTimezoneCommand = setTimezoneCommand;
 
         _commands = new Dictionary<string, IBotCommand>(StringComparer.OrdinalIgnoreCase)
         {
@@ -54,9 +63,31 @@ public class CommandRouter
             { listCommand.Name, listCommand },
             { addCommand.Name, addCommand },
             { statsCommand.Name, statsCommand },
+            { summaryCommand.Name, summaryCommand },
+            { setSummaryCommand.Name, setSummaryCommand },
             { editCommand.Name, editCommand },
             { deleteCommand.Name, deleteCommand },
+            { setTimezoneCommand.Name, setTimezoneCommand },
         };
+    }
+
+    /// <summary>
+    /// Зарегистрировать команды бота в Telegram (кнопка Menu)
+    /// </summary>
+    public async Task SetBotCommandsAsync(CancellationToken cancellationToken = default)
+    {
+        var request = new SetMyCommandsRequest
+        {
+            Commands = _commands.Values
+                .Select(c => new BotCommand
+                {
+                    Command = c.Name,
+                    Description = c.Description
+                })
+                .ToList()
+        };
+
+        await _telegramClient.SetMyCommandsAsync(request, cancellationToken);
     }
 
     /// <summary>
@@ -191,6 +222,28 @@ public class CommandRouter
                 await _editCommand.HandleTimeInputAsync(chatId2, userId2, messageText, cancellationToken);
                 break;
 
+            case UserState.WaitingForSummaryTime:
+                var chatIdSummary = update.Message?.Chat.Id ?? 0;
+                var userIdSummary = update.Message?.From?.Id ?? 0;
+                await _setSummaryCommand.HandleSummaryTimeInputAsync(chatIdSummary, userIdSummary, messageText, cancellationToken);
+                break;
+
+            case UserState.WaitingForTimeZone:
+                var chatIdTz = update.Message?.Chat.Id ?? 0;
+                var userIdTz = update.Message?.From?.Id ?? 0;
+                var userStateTz = _stateManager.GetData<long>(userIdTz, "UserId");
+                if (userStateTz != 0)
+                {
+                    // Уже зарегистрированный пользователь меняет TZ через /settimezone
+                    await _setTimezoneCommand.HandleTimeZoneInputAsync(chatIdTz, userIdTz, messageText, cancellationToken);
+                }
+                else
+                {
+                    // Регистрация — ввод TZ после имени
+                    await _startCommand.HandleTimeZoneInputAsync(update, messageText, cancellationToken);
+                }
+                break;
+
             default:
                 _logger.LogWarning("Неизвестное состояние {State} для пользователя {UserId}", state, userId);
                 _stateManager.ClearState(userId);
@@ -265,6 +318,17 @@ public class CommandRouter
                     else if (parts[1] == "no")
                     {
                         await _deleteCommand.HandleDeleteConfirmAsync(chatId, userId, "no", 0, cancellationToken);
+                    }
+                    break;
+
+                case "setsummary":
+                    await _setSummaryCommand.HandleCallbackAsync(chatId, userId, parts[1], cancellationToken);
+                    break;
+
+                case "summarycomplete":
+                    if (long.TryParse(parts[1], out var completeHabitId))
+                    {
+                        await _summaryCommand.HandleCompleteCallbackAsync(chatId, userId, completeHabitId, cancellationToken);
                     }
                     break;
 

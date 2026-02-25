@@ -49,7 +49,8 @@ public class StartCommand : BotCommandBase
                 await SendMessageAsync(chatId.Value, 
                     $"Привет, {existingUser.Name}! 👋\n\n" +
                     "Ты уже зарегистрирован. Используй /help для просмотра доступных команд.", 
-                    cancellationToken);
+                    cancellationToken,
+                    replyMarkup: ReplyKeyboardHelper.PostRegistrationKeyboard);
                 
                 StateManager.ClearState(userId.Value);
                 return;
@@ -97,31 +98,97 @@ public class StartCommand : BotCommandBase
                 return;
             }
 
-            // Создаем пользователя
+            // Сохраняем имя и данные Telegram в контексте, переходим к вводу часового пояса
             var telegramUser = update.Message?.From;
-            
+            StateManager.SetData(userId.Value, "RegistrationName", name.Trim());
+            StateManager.SetData(userId.Value, "TelegramFirstName", telegramUser?.FirstName ?? string.Empty);
+            StateManager.SetData(userId.Value, "TelegramLastName", telegramUser?.LastName ?? string.Empty);
+            StateManager.SetData(userId.Value, "TelegramUserName", telegramUser?.Username ?? string.Empty);
+
+            await SendMessageAsync(chatId.Value,
+                "Укажи свой часовой пояс в виде смещения от UTC.\n\n" +
+                "Примеры: +3, -5, +5:30, 0\n" +
+                "(Москва = +3, Абакан = +7, Лондон = 0)",
+                cancellationToken);
+
+            StateManager.SetState(userId.Value, UserState.WaitingForTimeZone);
+            Logger.LogInformation("Пользователь {UserId} ввёл имя, ожидание часового пояса", userId.Value);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Ошибка обработки имени для пользователя {UserId}", userId);
+            await SendMessageAsync(chatId.Value, 
+                "Произошла ошибка при регистрации. Попробуй начать заново с /start", 
+                cancellationToken);
+            StateManager.ClearState(userId.Value);
+        }
+    }
+
+    /// <summary>
+    /// Обработка ответа с часовым поясом
+    /// </summary>
+    public async Task HandleTimeZoneInputAsync(Update update, string input, CancellationToken cancellationToken = default)
+    {
+        var chatId = GetChatId(update);
+        var userId = GetUserId(update);
+
+        if (chatId == null || userId == null)
+        {
+            return;
+        }
+
+        try
+        {
+            var timeZone = TimeZoneParser.Parse(input);
+            if (timeZone == null)
+            {
+                await SendMessageAsync(chatId.Value,
+                    "Неверный формат часового пояса. ⚠️\n\n" +
+                    "Введи смещение от UTC, например: +3, -5, +5:30, 0",
+                    cancellationToken);
+                return;
+            }
+
+            // Восстанавливаем данные регистрации из контекста
+            var name = StateManager.GetData<string>(userId.Value, "RegistrationName");
+            if (string.IsNullOrEmpty(name))
+            {
+                await SendMessageAsync(chatId.Value,
+                    "Произошла ошибка. Попробуй начать заново с /start",
+                    cancellationToken);
+                StateManager.ClearState(userId.Value);
+                return;
+            }
+
+            var telegramFirstName = StateManager.GetData<string>(userId.Value, "TelegramFirstName");
+            var telegramLastName = StateManager.GetData<string>(userId.Value, "TelegramLastName");
+            var telegramUserName = StateManager.GetData<string>(userId.Value, "TelegramUserName");
+
             var createUserDto = new CreateUserDto
             {
-                Name = name.Trim(),
+                Name = name,
                 TelegramUserId = userId.Value,
                 TelegramChatId = chatId.Value,
-                TelegramFirstName = telegramUser?.FirstName,
-                TelegramLastName = telegramUser?.LastName,
-                TelegramUserName = telegramUser?.Username
+                TelegramFirstName = string.IsNullOrEmpty(telegramFirstName) ? null : telegramFirstName,
+                TelegramLastName = string.IsNullOrEmpty(telegramLastName) ? null : telegramLastName,
+                TelegramUserName = string.IsNullOrEmpty(telegramUserName) ? null : telegramUserName,
+                TimeZone = timeZone
             };
 
             await _userService.CreateUserAsync(createUserDto, cancellationToken);
 
             await SendMessageAsync(chatId.Value, 
-                $"Отлично, {name}! ✅\n\n" +
+                $"Отлично, {name}! ✅\n" +
+                $"Часовой пояс: UTC{timeZone}\n\n" +
                 "Регистрация завершена. Теперь ты можешь:\n" +
                 "• /add - добавить новую привычку\n" +
                 "• /list - посмотреть свои привычки\n" +
                 "• /stats - посмотреть статистику", 
-                cancellationToken);
+                cancellationToken,
+                replyMarkup: ReplyKeyboardHelper.PostRegistrationKeyboard);
 
             StateManager.ClearState(userId.Value);
-            Logger.LogInformation("Пользователь {UserId} успешно зарегистрирован с именем {Name}", userId.Value, name);
+            Logger.LogInformation("Пользователь {UserId} зарегистрирован с именем {Name}, TZ={TimeZone}", userId.Value, name, timeZone);
         }
         catch (Exception ex)
         {

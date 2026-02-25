@@ -159,4 +159,63 @@ public class UserServiceTests
         // Assert
         result.Should().BeTrue();
     }
+
+    #region UpdateDailySummarySettingsAsync
+
+    [Fact]
+    public async Task UpdateDailySummarySettingsAsync_ShouldUpdateSettings_WhenUserExists()
+    {
+        // Arrange
+        var user = new User { Id = 1, TelegramUserId = 123, Name = "Test", IsDailySummaryEnabled = false };
+        var summaryTime = new TimeSpan(20, 30, 0);
+
+        _userRepositoryMock
+            .Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        await _userService.UpdateDailySummarySettingsAsync(1, isEnabled: true, summaryTime: summaryTime);
+
+        // Assert
+        user.IsDailySummaryEnabled.Should().BeTrue();
+        user.DailySummaryTime.Should().Be(summaryTime);
+        _userRepositoryMock.Verify(r => r.UpdateAsync(user), Times.Once);
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateDailySummarySettingsAsync_ShouldNotUpdateTime_WhenTimeIsNull()
+    {
+        // Arrange
+        var originalTime = new TimeSpan(21, 0, 0);
+        var user = new User { Id = 1, TelegramUserId = 123, Name = "Test", IsDailySummaryEnabled = true, DailySummaryTime = originalTime };
+
+        _userRepositoryMock
+            .Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        await _userService.UpdateDailySummarySettingsAsync(1, isEnabled: false);
+
+        // Assert
+        user.IsDailySummaryEnabled.Should().BeFalse();
+        user.DailySummaryTime.Should().Be(originalTime);
+    }
+
+    [Fact]
+    public async Task UpdateDailySummarySettingsAsync_ShouldThrow_WhenUserNotFound()
+    {
+        // Arrange
+        _userRepositoryMock
+            .Setup(r => r.GetByIdAsync(999, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        // Act
+        var act = () => _userService.UpdateDailySummarySettingsAsync(999, isEnabled: true);
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    #endregion
 }

@@ -46,6 +46,16 @@ public class User : BaseEntity
     public string? TimeZone { get; set; }
 
     /// <summary>
+    /// Время отправки ежедневной сводки (null если не настроено, по умолчанию 21:00)
+    /// </summary>
+    public TimeSpan? DailySummaryTime { get; set; }
+
+    /// <summary>
+    /// Флаг включения/отключения ежедневной сводки (по умолчанию true)
+    /// </summary>
+    public bool IsDailySummaryEnabled { get; set; } = true;
+
+    /// <summary>
     /// Коллекция привычек пользователя
     /// </summary>
     public ICollection<Habit> Habits { get; set; } = new List<Habit>();

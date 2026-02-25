@@ -9,13 +9,16 @@ namespace HabiBot.Bot.Services;
 public class BotBackgroundService : BackgroundService
 {
     private readonly BotUpdateHandler _updateHandler;
+    private readonly CommandRouter _commandRouter;
     private readonly ILogger<BotBackgroundService> _logger;
 
     public BotBackgroundService(
         BotUpdateHandler updateHandler,
+        CommandRouter commandRouter,
         ILogger<BotBackgroundService> logger)
     {
         _updateHandler = updateHandler;
+        _commandRouter = commandRouter;
         _logger = logger;
     }
 
@@ -25,6 +28,7 @@ public class BotBackgroundService : BackgroundService
 
         try
         {
+            await _commandRouter.SetBotCommandsAsync(stoppingToken);
             await _updateHandler.StartPollingAsync(stoppingToken);
         }
         catch (Exception ex)

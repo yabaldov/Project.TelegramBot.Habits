@@ -32,7 +32,7 @@ public abstract class BotCommandBase : IBotCommand
     /// <summary>
     /// Отправить текстовое сообщение пользователю
     /// </summary>
-    protected async Task SendMessageAsync(long chatId, string text, CancellationToken cancellationToken = default, InlineKeyboardMarkup? replyMarkup = null)
+    protected async Task SendMessageAsync(long chatId, string text, CancellationToken cancellationToken = default, object? replyMarkup = null)
     {
         try
         {
@@ -48,6 +48,54 @@ public abstract class BotCommandBase : IBotCommand
         catch (Exception ex)
         {
             Logger.LogError(ex, "Ошибка отправки сообщения в чат {ChatId}", chatId);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Отправить сообщение с HTML-разметкой
+    /// </summary>
+    protected async Task SendHtmlMessageAsync(long chatId, string text, CancellationToken cancellationToken = default, object? replyMarkup = null)
+    {
+        try
+        {
+            var request = new SendMessageRequest
+            {
+                ChatId = chatId,
+                Text = text,
+                ParseMode = "HTML",
+                ReplyMarkup = replyMarkup
+            };
+            await TelegramClient.SendMessageAsync(request, cancellationToken);
+            Logger.LogDebug("Отправлено HTML-сообщение в чат {ChatId}: {Text}", chatId, text);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Ошибка отправки HTML-сообщения в чат {ChatId}", chatId);
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Отправить сообщение с Markdown-разметкой
+    /// </summary>
+    protected async Task SendMarkdownMessageAsync(long chatId, string text, CancellationToken cancellationToken = default, object? replyMarkup = null)
+    {
+        try
+        {
+            var request = new SendMessageRequest
+            {
+                ChatId = chatId,
+                Text = text,
+                ParseMode = "MarkdownV2",
+                ReplyMarkup = replyMarkup
+            };
+            await TelegramClient.SendMessageAsync(request, cancellationToken);
+            Logger.LogDebug("Отправлено Markdown-сообщение в чат {ChatId}: {Text}", chatId, text);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Ошибка отправки Markdown-сообщения в чат {ChatId}", chatId);
             throw;
         }
     }

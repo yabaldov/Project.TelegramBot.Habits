@@ -38,5 +38,15 @@ public enum UserState
     /// <summary>
     /// Ожидание ввода нового времени при редактировании
     /// </summary>
-    WaitingForEditTime
+    WaitingForEditTime,
+
+    /// <summary>
+    /// Ожидание ввода времени для ежедневной сводки
+    /// </summary>
+    WaitingForSummaryTime,
+
+    /// <summary>
+    /// Ожидание ввода часового пояса (UTC-смещения)
+    /// </summary>
+    WaitingForTimeZone
 }
